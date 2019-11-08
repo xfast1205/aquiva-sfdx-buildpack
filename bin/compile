@@ -27,8 +27,6 @@ setup_dirs() {
 }
 
 header 'Welcome to salesforce-cli-buildpack!'
-log "Exporting environment directories ..."
-export_env "$ENV_DIR"
 
 log "Setting up paths ..."
 

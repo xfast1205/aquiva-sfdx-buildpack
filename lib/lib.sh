@@ -11,19 +11,6 @@ log() {
   echo -e "       $*"
 }
 
-export_env() {
-  local env_dir=${1:-$ENV_DIR}
-  local whitelist=${2:-''}
-  local blacklist="$(_env_blacklist $3)"
-  if [ -d "$env_dir" ]; then
-    for e in $(ls $env_dir); do
-      echo "$e" | grep -E "$whitelist" | grep -qvE "$blacklist" &&
-      export "$e=$(cat $env_dir/$e)"
-      :
-    done
-  fi
-}
-
 debug() {
   if [ "$SFDX_BUILDPACK_DEBUG" == "true" ] ; then
     echo "       [DEBUG] $*"
