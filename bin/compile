@@ -68,8 +68,7 @@ log "Starting SFDX plugin installation ..."
 install_aquiva_plugin
 
 log "Starting SFDC ..."
-cd ../../../..
-ls -la
+cd $BUILD_DIR
 sfdx_auth_devhub
 sfdx_create_scratch
 sfdx_deploy

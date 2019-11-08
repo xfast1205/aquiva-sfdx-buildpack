@@ -33,9 +33,6 @@ sfdx_deploy() {
 
 sfdx_pmd() {
   log "Code analysis started ..."
-  pwd
-  echo "---"
-  ls -la
 
   sfdx aquiva:pmd \
     -d force-app  \
