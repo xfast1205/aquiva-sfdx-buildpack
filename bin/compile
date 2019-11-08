@@ -73,7 +73,6 @@ ls -la
 sfdx_auth_devhub
 sfdx_create_scratch
 sfdx_deploy
-sfdx_pmd
 sfdx_remove_scratch
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
