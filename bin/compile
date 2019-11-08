@@ -20,6 +20,7 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 source $BP_DIR/lib/lib.sh
 source $BP_DIR/lib/deps.sh
+source $BP_DIR/lib/sfdc.sh
 
 setup_dirs() {
   export PATH="$BUILD_DIR/vendor/sfdx/cli/bin:$PATH"
