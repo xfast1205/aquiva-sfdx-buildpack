@@ -43,14 +43,14 @@ prepare_packs() {
 
 install_aquiva_plugin() {
   NPM_TOKEN=$NPM_TOKEN
+  ENV_DIR=${3:-}
   log "Installing SFDX Aquiva plugin ..."
+  cd $ENV_DIR
+  ls -la
 
   mkdir aquiva_temp && cd aquiva_temp && touch .npmrc && chmod -R 755 ".npmrc" && echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
   cat .npmrc
-  printenv
-  echo "token0"
-  echo "$NPM_TOKEN"
-  echo "token1"
+
   npm install @steplyakov/sfdx-aquiva-plugin
   sfdx plugins:link node_modules/@steplyakov/sfdx-aquiva-plugin
 }
