@@ -58,7 +58,6 @@ fi
 
 log "Starting NPM installation ..."
 install_npm
-prepare_packs
 
 log "Starting SFDX plugin installation ..."
 install_aquiva_plugin

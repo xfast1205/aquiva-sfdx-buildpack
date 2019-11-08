@@ -28,9 +28,8 @@ install_jq() {
 install_npm() {
   log "Installing NPM ..."
 
-  apt-get update
-  apt-get -f install -y
-  apt-get -y --fix-missing install npm
+  mkdir npm_temp && cd npm_temp && curl -O -L https://npmjs.org/install.sh
+  sh install.sh
   npm install npm@latest
 }
 
