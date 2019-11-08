@@ -46,7 +46,7 @@ install_aquiva_plugin() {
   log "Installing SFDX Aquiva plugin ..."
 
   mkdir aquiva_temp && cd aquiva_temp && touch .npmrc && chmod -R 755 ".npmrc" && echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-  echo $NPM_TOKEN
+  pwd
   npm install @steplyakov/sfdx-aquiva-plugin
   sfdx plugins:link node_modules/@steplyakov/sfdx-aquiva-plugin
 }
