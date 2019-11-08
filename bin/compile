@@ -40,13 +40,8 @@ header 'Welcome to salesforce-cli-buildpack!'
 export_env_dir
 
 log "Setting up paths ..."
-
-log "BUILD_DIR: $BUILD_DIR"
-log "CACHE_DIR: $CACHE_DIR"
-log "ENV_DIR: $ENV_DIR"
-log "BP_DIR: $BP_DIR"
-
 setup_dirs
+
 log "Starting CLI installation ..."
 install_sfdx_cli $BUILD_DIR
 
