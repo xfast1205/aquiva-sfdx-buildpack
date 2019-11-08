@@ -29,8 +29,11 @@ setup_dirs() {
 export_env_dir() {
   whitelist_regex=${2:-$'^(SALESFORCE_|HEROKU_)'}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  echo "1"
   if [ -d "$ENV_DIR" ]; then
+    echo "2"
     for e in $(ls $ENV_DIR); do
+      echo "3"
       echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
       export $e=$(cat $ENV_DIR/$e)
       :
@@ -38,9 +41,9 @@ export_env_dir() {
   fi
 }
 
-export_env_dir
-
 header 'Welcome to salesforce-cli-buildpack!'
+
+export_env_dir
 
 log "Setting up paths ..."
 
