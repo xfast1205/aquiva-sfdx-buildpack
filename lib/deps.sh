@@ -45,7 +45,10 @@ install_aquiva_plugin() {
   NPM_TOKEN=$NPM_TOKEN
   ENV_DIR=${3:-}
   log "Installing SFDX Aquiva plugin ..."
+  echo "envir - $ENV_DIR"
+  pwd
   cd $ENV_DIR
+  pwd
   ls -la
 
   mkdir aquiva_temp && cd aquiva_temp && touch .npmrc && chmod -R 755 ".npmrc" && echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
