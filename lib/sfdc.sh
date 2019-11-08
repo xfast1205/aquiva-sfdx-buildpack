@@ -15,6 +15,9 @@ sfdx_auth_devhub() {
 
 sfdx_create_scratch() {
   log "Creating scratch org ..."
+  pwd
+  cd 
+  ls -la
 
   sfdx force:org:create                  \
     -u $SF_USERNAME                      \
