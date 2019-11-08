@@ -5,6 +5,9 @@ source $BP_DIR/lib/lib.sh
 
 sfdx_auth_devhub() {
   log "Starting auth DevHub ..."
+  pwd
+  cd 
+  ls -la
 
   sfdx force:auth:jwt:grant \
   --clientid $CONSUMER_KEY  \
@@ -15,9 +18,6 @@ sfdx_auth_devhub() {
 
 sfdx_create_scratch() {
   log "Creating scratch org ..."
-  pwd
-  cd 
-  ls -la
 
   sfdx force:org:create                  \
     -u $SF_USERNAME                      \
