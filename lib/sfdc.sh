@@ -5,7 +5,6 @@ source $BP_DIR/lib/lib.sh
 
 sfdx_auth_devhub() {
   log "Starting auth DevHub ..."
-  cd ../../../..
 
   sfdx force:auth:jwt:grant \
   --clientid $CONSUMER_KEY  \
