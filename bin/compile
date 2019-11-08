@@ -30,10 +30,10 @@ header 'Welcome to salesforce-cli-buildpack!'
 
 log "Setting up paths ..."
 
-debug "BUILD_DIR: $BUILD_DIR"
-debug "CACHE_DIR: $CACHE_DIR"
-debug "ENV_DIR: $ENV_DIR"
-debug "BP_DIR: $BP_DIR"
+log "BUILD_DIR: $BUILD_DIR"
+log "CACHE_DIR: $CACHE_DIR"
+log "ENV_DIR: $ENV_DIR"
+log "BP_DIR: $BP_DIR"
 
 setup_dirs
 log "Starting CLI installation ..."
