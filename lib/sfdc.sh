@@ -20,6 +20,7 @@ sfdx_auth_sfdxurl() {
   if [ ! "$2" == "" ]; then
     echo "$2" > "$SFDX_AUTH_URL_FILE"
   fi
+  cat $SFDX_AUTH_URL_FILE
 
   sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
 }
@@ -67,7 +68,7 @@ sfdx_deploy() {
 
 install_package_version() {
   PACKAGE_NAME=$1
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --packages $PACKAGE_NAME -v $3 --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --packages $PACKAGE_NAME -v $2 --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
   echo $PACKAGE_VERSION_JSON
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
@@ -84,7 +85,7 @@ install_package_version() {
   VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
   echo $VERSION_NUMBER
 
-  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create --package $PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $3 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
+  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create --package $PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
   echo $PACKAGE_VERSION_ID
 
   sfdx force:package:list

@@ -52,6 +52,14 @@ deploy_to_scratch() {
 
 }
 
+install_package_qa() {
+
+  sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
+  sfdx_auth_sfdxurl $qaAuthFile $SFDX_AUTH_URL $QA_USERNAME
+  install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
+
+}
+
 header 'Welcome to aquiva-sfdx-buildpack!'
 
 export_env_dir
@@ -90,11 +98,8 @@ if [ "$STAGE" == "DEV" ]; then
   header "QA app deploy"
 
   # deploy_to_scratch
-  cd $BUILD_DIR
 
-  sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
-
-  install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
+  install_package_qa
 
 fi
 
