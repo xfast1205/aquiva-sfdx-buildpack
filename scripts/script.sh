@@ -40,7 +40,7 @@ echo "heroku pipelines:destroy $HEROKU_PIPELINE_NAME
 heroku apps:destroy -a $HEROKU_QA_APP_NAME -c $HEROKU_QA_APP_NAME
 heroku apps:destroy -a $HEROKU_STAGING_APP_NAME -c $HEROKU_STAGING_APP_NAME
 heroku apps:destroy -a $HEROKU_PROD_APP_NAME -c $HEROKU_PROD_APP_NAME
-rm -- \"destroy$APP_NAME.sh\"" > destroy-$APP_NAME.sh
+rm -- \"destroy-$APP_NAME.sh\"" > destroy-$APP_NAME.sh
 
 echo ""
 echo "Run ./destroy-$APP_NAME.sh to remove resources"
@@ -136,7 +136,7 @@ heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_AUTH_URL=$prodSfdxAuthUrl
 heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_BUILDPACK_DEBUG=false
 heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_INSTALL_PACKAGE_VERSION=true
 heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_CREATE_PACKAGE_VERSION=false
-heroku ci:config:set -a $HEROKU_PROD_APP_NAME SFDX_PACKAGE_NAME="$PACKAGE_NAME"
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_PACKAGE_NAME="$PACKAGE_NAME"
 heroku ci:config:set -p $HEROKU_PIPELINE_NAME APP_NAME="$APP_NAME"
 heroku ci:config:set -p $HEROKU_PIPELINE_NAME DEV_HUB_USERNAME="$DEV_HUB_USERNAME"
 heroku ci:config:set -p $HEROKU_PIPELINE_NAME QA_USERNAME="$QA_USERNAME"

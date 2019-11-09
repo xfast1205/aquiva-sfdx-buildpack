@@ -40,13 +40,6 @@ export_env_dir() {
 }
 
 deploy_to_scratch() {
-  echo "------"
-  echo $1
-  echo $2
-  echo $3
-  echo $4
-  echo $SFDX_DEV_HUB_AUTH_URL
-  echo "------"
 
   sfdx_auth_sfdxurl $1 $2
   sfdx_create_scratch $3 $4
