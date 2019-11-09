@@ -98,7 +98,7 @@ fi
 if [ "$STAGE" == "DEV" ]; then
   header "QA app deploy"
 
-  deploy_to_scratch
+  # deploy_to_scratch
 
   install_package_qa
 
