@@ -89,7 +89,7 @@ fi
 if [ "$STAGE" == "DEV" ]; then
   header "QA app deploy"
 
-  # deploy_to_scratch
+  deploy_to_scratch
 
   install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
 
