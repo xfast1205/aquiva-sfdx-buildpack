@@ -14,7 +14,7 @@ BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
-TARGET_SCRATCH_ORG_ALIAS="scratch-$DYNO-$PORT"
+TARGET_SCRATCH_ORG_ALIAS="scratch-$SECONDS"
 vendorDir="vendor/sfdx"
 devHubAuthFile="$BUILD_DIR/$vendorDir/sfdxurl"
 
@@ -65,6 +65,7 @@ install_package_qa() {
 header 'Welcome to aquiva-sfdx-buildpack!'
 
 export_env_dir
+printenv
 
 log "Setting up paths ..."
 setup_dirs
