@@ -21,7 +21,7 @@ sfdx_auth_sfdxurl() {
     echo "$2" > "$SFDX_AUTH_URL_FILE"
   fi
 
-  sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
+  sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3 --setdefaultusername
 }
 
 sfdx_auth_devhub_sfdxurl() {
