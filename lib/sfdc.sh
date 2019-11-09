@@ -20,7 +20,6 @@ sfdx_auth_sfdxurl() {
   if [ ! "$2" == "" ]; then
     echo "$2" > "$SFDX_AUTH_URL_FILE"
   fi
-  cat $SFDX_AUTH_URL_FILE
 
   sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
 }
