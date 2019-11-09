@@ -41,7 +41,7 @@ export_env_dir() {
 
 deploy_to_scratch() {
 
-  sfdx_auth_sfdxurl $1 $2
+  sfdx_auth_sfdxurl $1 $2 $3
   sfdx_create_scratch $3 $4
   sfdx_source_push $4
   sfdx_run_test $4

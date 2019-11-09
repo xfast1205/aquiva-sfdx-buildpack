@@ -21,7 +21,7 @@ sfdx_auth_sfdxurl() {
     echo "$2" > "$SFDX_AUTH_URL_FILE"
   fi
 
-  sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE
+  sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
 }
 
 sfdx_create_scratch() {
