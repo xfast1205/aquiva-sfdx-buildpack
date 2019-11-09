@@ -20,11 +20,15 @@ sfdx_auth_sfdxurl() {
   if [ ! "$2" == "" ]; then
     echo "$2" > "$SFDX_AUTH_URL_FILE"
   fi
+  echo $3
 
   sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
 }
 
 sfdx_create_scratch() {
+  log "Creating scratch org ..."
+  echo $1
+  echo $2
 
   sfdx force:org:create -u $1 -f ./config/project-scratch-def.json -a $2
 }
