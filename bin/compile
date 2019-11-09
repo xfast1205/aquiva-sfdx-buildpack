@@ -55,7 +55,7 @@ deploy_to_scratch() {
 install_package_qa() {
 
   sfdx force:auth:logout -a -p
-  sfdx_auth_sfdxurl $devHubAuthFile $SFDX_AUTH_URL $QA_USERNAME
+  sfdx_auth_sfdxurl $qaAuthFile $SFDX_AUTH_URL $QA_USERNAME
   sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
   install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
 
