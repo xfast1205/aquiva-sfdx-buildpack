@@ -53,7 +53,7 @@ deploy_to_scratch() {
 
 install_package_qa() {
 
-  sfdx_auth_sfdxurl $devSfdxAuthUrl $SFDX_AUTH_URL $QA_USERNAME
+  sfdx_auth_sfdxurl $devHubAuthFile $SFDX_AUTH_URL $QA_USERNAME
   sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
   install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
 
@@ -62,7 +62,6 @@ install_package_qa() {
 header 'Welcome to aquiva-sfdx-buildpack!'
 
 export_env_dir
-printenv
 
 log "Setting up paths ..."
 setup_dirs
