@@ -85,9 +85,9 @@ install_package_version() {
   VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
   echo $VERSION_NUMBER
 
-  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create --package $PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v %DEVHUB_USERNAME% --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
+  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create --package $PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
   echo $PACKAGE_VERSION_ID
 
   sfdx force:package:list
-  sfdx force:package:install --package $PACKAGE_VERSION_ID --wait 100 --publishwait 10 --noprompt -u $3
+  sfdx force:package:install --package $PACKAGE_VERSION_ID --wait 100 --publishwait 100 --noprompt -u $3
 }
