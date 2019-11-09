@@ -32,15 +32,12 @@ sfdx_auth_devhub_sfdxurl() {
   if [ ! "$2" == "" ]; then
     echo "$2" > "$SFDX_AUTH_URL_FILE"
   fi
-  echo $3
 
   sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3 --setdefaultdevhubusername
 }
 
 sfdx_create_scratch() {
   log "Creating scratch org ..."
-  echo $1
-  echo $2
 
   sfdx force:org:create -u $1 -f ./config/project-scratch-def.json -a $2
 }
@@ -54,7 +51,7 @@ sfdx_source_push() {
 sfdx_run_test() {
   log "Running org tests ..."
 
-  force:apex:test:run -u $1 -r human -y -w 1000 --verbose -l RunLocalTests
+  sfdx force:apex:test:run -u $1 -r human -y -w 1000 --verbose -l RunLocalTests
 }
 
 sfdx_delete_scratch() {
