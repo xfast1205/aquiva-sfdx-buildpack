@@ -131,6 +131,15 @@ heroku config:set -a $HEROKU_PROD_APP_NAME SFDX_PACKAGE_NAME="$PACKAGE_NAME"
 heroku config:set -a $HEROKU_PROD_APP_NAME APP_NAME="$APP_NAME"
 heroku config:set -a $HEROKU_PROD_APP_NAME DEV_HUB_USERNAME="$DEV_HUB_USERNAME"
 heroku config:set -a $HEROKU_PROD_APP_NAME QA_USERNAME="$QA_USERNAME"
+heroku config:set -a $HEROKU_PROD_APP_NAME SFDX_DEV_HUB_AUTH_URL=$devHubSfdxAuthUrl
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_AUTH_URL=$prodSfdxAuthUrl
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_BUILDPACK_DEBUG=false
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_INSTALL_PACKAGE_VERSION=true
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME SFDX_CREATE_PACKAGE_VERSION=false
+heroku ci:config:set -a $HEROKU_PROD_APP_NAME SFDX_PACKAGE_NAME="$PACKAGE_NAME"
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME APP_NAME="$APP_NAME"
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME DEV_HUB_USERNAME="$DEV_HUB_USERNAME"
+heroku ci:config:set -p $HEROKU_PIPELINE_NAME QA_USERNAME="$QA_USERNAME"
 
 # Setup your pipeline
 heroku pipelines:connect $HEROKU_PIPELINE_NAME --repo $GITHUB_REPO
