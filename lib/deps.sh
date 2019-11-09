@@ -32,20 +32,3 @@ install_npm() {
   sh install.sh
   npm install npm@latest
 }
-
-prepare_packs() {
-  log "Preparing NPM packs ..."
-
-  npm install -g n
-  npm i -g yarn
-  n latest
-}
-
-install_aquiva_plugin() {
-  log "Installing SFDX Aquiva plugin ..."
-
-  echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-
-  npm install @steplyakov/sfdx-aquiva-plugin
-  sfdx plugins:link node_modules/@steplyakov/sfdx-aquiva-plugin
-}

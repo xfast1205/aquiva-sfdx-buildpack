@@ -14,6 +14,9 @@ BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+TARGET_SCRATCH_ORG_ALIAS="scratch-$DYNO-$PORT"
+devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
+vendorDir="vendor/sfdx"
 
 # set defaults for optional config vars
 : ${SFDX_BUILDPACK_DEBUG:="false"}
@@ -36,7 +39,23 @@ export_env_dir() {
   fi
 }
 
-header 'Welcome to salesforce-cli-buildpack!'
+deploy_to_scratch() {
+
+  sfdx_auth_sfdxurl $1 $2
+  sfdx_create_scratch $3 $4
+  sfdx_source_push $4
+  sfdx_run_test $4
+  sfdx_delete_scratch $4
+
+}
+
+install_package_qa() {
+  sfdx_auth_sfdxurl $1 $2
+  sfdx_auth_sfdxurl $3 $4
+  install_package_version $5 $DEV_HUB_USERNAME $QA_USERNAME
+}
+
+header 'Welcome to aquiva-sfdx-buildpack!'
 
 export_env_dir
 
@@ -56,23 +75,41 @@ mkdir -p $BUILD_DIR/.profile.d
 if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
   log "Creating path.sh ..."
   echo "echo \"Updating PATH to include Salesforce CLI ...\"
-export PATH=\$PATH:/app/vendor/sfdx/cli/bin/" > $BUILD_DIR/.profile.d/path.sh
+  export PATH=\$PATH:/app/vendor/sfdx/cli/bin/" > $BUILD_DIR/.profile.d/path.sh
 
   log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
 fi
 
-log "Starting NPM installation ..."
-install_npm
+# deploy on app review
+if [ "$STAGE" == "" ]; then
+  header "Review app deploy"
 
-log "Starting SFDX plugin installation ..."
-install_aquiva_plugin
+  deploy_to_scratch        \
+    $devHubAuthFile        \
+    $SFDX_DEV_HUB_AUTH_URL \
+    $DEV_HUB_USERNAME      \
+    $TARGET_SCRATCH_ORG_ALIAS
 
-log "Starting SFDC ..."
-cd $BUILD_DIR
-sfdx_auth_devhub
-sfdx_create_scratch
-sfdx_deploy
-sfdx_remove_scratch
+fi
+
+# deploy on QA org
+if [ "$STAGE" == "DEV" ]; then
+  header "QA app deploy"
+
+  deploy_to_scratch        \
+    $devHubAuthFile        \
+    $SFDX_DEV_HUB_AUTH_URL \
+    $DEV_HUB_USERNAME      \
+    $TARGET_SCRATCH_ORG_ALIAS
+
+  install_package_qa       \
+    $devSfdxAuthUrl        \
+    $SFDX_AUTH_URL         \
+    $devHubAuthFile        \
+    $SFDX_DEV_HUB_AUTH_URL \
+    $SFDX_PACKAGE_NAME
+
+fi
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0
