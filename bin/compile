@@ -18,6 +18,7 @@ NUMBER=$(date +%s)
 TARGET_SCRATCH_ORG_ALIAS="scratch-$NUMBER"
 vendorDir="vendor/sfdx"
 devHubAuthFile="$BUILD_DIR/$vendorDir/sfdxurl"
+qaAuthFile="$BUILD_DIR/$vendorDir/sfdxqaurl"
 
 # set defaults for optional config vars
 : ${SFDX_BUILDPACK_DEBUG:="false"}
