@@ -41,6 +41,7 @@ export_env_dir() {
 }
 
 deploy_to_scratch() {
+  cd $BUILD_DIR
 
   sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
   sfdx_create_scratch $DEV_HUB_USERNAME $TARGET_SCRATCH_ORG_ALIAS
