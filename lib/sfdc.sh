@@ -25,6 +25,18 @@ sfdx_auth_sfdxurl() {
   sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
 }
 
+sfdx_auth_devhub_sfdxurl() {
+  log "Starting SFDX URL auth DevHub ..."
+
+  SFDX_AUTH_URL_FILE="$1"
+  if [ ! "$2" == "" ]; then
+    echo "$2" > "$SFDX_AUTH_URL_FILE"
+  fi
+  echo $3
+
+  sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3 --setdefaultdevhubusername
+}
+
 sfdx_create_scratch() {
   log "Creating scratch org ..."
   echo $1

@@ -42,7 +42,7 @@ export_env_dir() {
 
 deploy_to_scratch() {
 
-  sfdx_auth_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
+  sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
   sfdx_create_scratch $DEV_HUB_USERNAME $TARGET_SCRATCH_ORG_ALIAS
   sfdx_source_push $TARGET_SCRATCH_ORG_ALIAS
   sfdx_run_test $TARGET_SCRATCH_ORG_ALIAS
@@ -53,7 +53,7 @@ deploy_to_scratch() {
 install_package_qa() {
 
   sfdx_auth_sfdxurl $devSfdxAuthUrl $SFDX_AUTH_URL $QA_USERNAME
-  sfdx_auth_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
+  sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
   install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
 
 }
