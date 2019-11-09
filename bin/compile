@@ -14,7 +14,8 @@ BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
-TARGET_SCRATCH_ORG_ALIAS="scratch-$SECONDS"
+NUMBER=$(date +%s)
+TARGET_SCRATCH_ORG_ALIAS="scratch-$NUMBER"
 vendorDir="vendor/sfdx"
 devHubAuthFile="$BUILD_DIR/$vendorDir/sfdxurl"
 
@@ -41,18 +42,19 @@ export_env_dir() {
 
 deploy_to_scratch() {
 
-  sfdx_auth_sfdxurl $1 $2 $3
-  sfdx_create_scratch $3 $4
-  sfdx_source_push $4
-  sfdx_run_test $4
-  sfdx_delete_scratch $4
+  sfdx_auth_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
+  sfdx_create_scratch $DEV_HUB_USERNAME $TARGET_SCRATCH_ORG_ALIAS
+  sfdx_source_push $TARGET_SCRATCH_ORG_ALIAS
+  sfdx_run_test $TARGET_SCRATCH_ORG_ALIAS
+  sfdx_delete_scratch $TARGET_SCRATCH_ORG_ALIAS
 
 }
 
 install_package_qa() {
-  sfdx_auth_sfdxurl $1 $2
-  sfdx_auth_sfdxurl $3 $4
-  install_package_version $5 $DEV_HUB_USERNAME $QA_USERNAME
+
+  sfdx_auth_sfdxurl $devSfdxAuthUrl $SFDX_AUTH_URL $QA_USERNAME
+  sfdx_auth_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
+  install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
 }
 
 header 'Welcome to aquiva-sfdx-buildpack!'
@@ -85,11 +87,7 @@ fi
 if [ "$STAGE" == "" ]; then
   header "Review app deploy"
 
-  deploy_to_scratch        \
-    $devHubAuthFile        \
-    $SFDX_DEV_HUB_AUTH_URL \
-    $DEV_HUB_USERNAME      \
-    $TARGET_SCRATCH_ORG_ALIAS
+  deploy_to_scratch
 
 fi
 
@@ -97,18 +95,9 @@ fi
 if [ "$STAGE" == "DEV" ]; then
   header "QA app deploy"
 
-  deploy_to_scratch        \
-    $devHubAuthFile        \
-    $SFDX_DEV_HUB_AUTH_URL \
-    $DEV_HUB_USERNAME      \
-    $TARGET_SCRATCH_ORG_ALIAS
+  deploy_to_scratch
 
-  install_package_qa       \
-    $devSfdxAuthUrl        \
-    $SFDX_AUTH_URL         \
-    $devHubAuthFile        \
-    $SFDX_DEV_HUB_AUTH_URL \
-    $SFDX_PACKAGE_NAME
+  install_package_qa
 
 fi
 
