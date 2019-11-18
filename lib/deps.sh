@@ -32,3 +32,9 @@ install_npm() {
   sh install.sh
   npm install npm@latest
 }
+
+install_xmllint() {
+  log "Installing xmllint ..."
+
+  apt-get install libxml2-utils
+}
