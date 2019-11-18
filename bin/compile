@@ -98,6 +98,9 @@ install_sfdx_cli $BUILD_DIR
 log "Starting jq installation ..."
 install_jq $BUILD_DIR
 
+log "Starting xmllint installation ..."
+install_xmllint
+
 # Create .profile.d folder
 mkdir -p $BUILD_DIR/.profile.d
 
