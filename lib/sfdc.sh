@@ -3,27 +3,6 @@
 
 source $BP_DIR/lib/lib.sh
 
-sfdx_auth_jwt() {
-  log "Starting JWT auth ..."
-
-  sfdx force:auth:jwt:grant  \
-    --clientid $CONSUMER_KEY \
-    --jwtkeyfile $SERVER_KEY \
-    --username $SF_USERNAME  \
-    --setdefaultdevhubusername
-}
-
-sfdx_auth_sfdxurl() {
-  log "Starting SFDX URL auth ..."
-
-  SFDX_AUTH_URL_FILE="$1"
-  if [ ! "$2" == "" ]; then
-    echo "$2" > "$SFDX_AUTH_URL_FILE"
-  fi
-
-  sfdx force:auth:sfdxurl:store -f $SFDX_AUTH_URL_FILE -a $3
-}
-
 sfdx_auth_devhub_sfdxurl() {
   log "Starting SFDX URL auth DevHub ..."
 
@@ -62,12 +41,12 @@ sfdx_delete_scratch() {
 sfdx_deploy() {
   log "Deploy started ..."
 
-  sfdx forcesource:deploy -u $1 -p $2
+  sfdx force:source:deploy -u $1 -p $2
 }
 
 install_package_version() {
   PACKAGE_NAME=$1
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --packages $PACKAGE_NAME -v $3 --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --packages $PACKAGE_NAME -v $2 --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
   echo $PACKAGE_VERSION_JSON
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
@@ -84,9 +63,48 @@ install_package_version() {
   VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
   echo $VERSION_NUMBER
 
-  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create --package $PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $3 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
+  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create --package $PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
   echo $PACKAGE_VERSION_ID
 
   sfdx force:package:list
   sfdx force:package:install --package $PACKAGE_VERSION_ID --wait 100 --publishwait 100 --noprompt -u $3
+}
+
+make_soap_request() {
+  log "Retrieve acess token ..."
+
+  SOAP_FILE="<?xml version=\"1.0\" encoding=\"utf-8\" ?> \
+    <env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" \
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+        xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"> \
+      <env:Body> \
+        <n1:login xmlns:n1=\"urn:partner.soap.sforce.com\"> \
+          <n1:username>$1</n1:username> \
+          <n1:password>$2$3</n1:password> \
+        </n1:login> \
+      </env:Body> \
+    </env:Envelope>"
+
+  echo "$SOAP_FILE" > "login.txt"
+  export RESPONSE=$(curl https://$4.salesforce.com/services/Soap/u/47.0 \
+    -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
+
+  parse_response
+}
+
+parse_response() {
+  echo "Parsing result"
+
+  echo "$RESPONSE" > "resp.xml"
+
+  export SESSION_ID=$(xmllint --xpath "//*[name()='sessionId']/text()" resp.xml)
+  export SERVER_URL=$(xmllint --xpath "//*[name()='serverUrl']/text()" resp.xml)
+
+  parse_url
+}
+
+parse_url() {
+  IFS="/"
+  read -ra ADDR <<< "$INSTANCE_URL"
+  export INSTANCE_URL="https://${ADDR[2]}"
 }

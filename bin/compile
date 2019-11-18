@@ -17,11 +17,6 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 NUMBER=$(date +%s)
 TARGET_SCRATCH_ORG_ALIAS="scratch-$NUMBER"
 vendorDir="vendor/sfdx"
-devHubAuthFile="$BUILD_DIR/$vendorDir/sfdxurl"
-qaAuthFile="$BUILD_DIR/$vendorDir/sfdxqaurl"
-
-# set defaults for optional config vars
-: ${SFDX_BUILDPACK_DEBUG:="false"}
 
 source $BP_DIR/lib/lib.sh
 source $BP_DIR/lib/deps.sh
@@ -42,27 +37,57 @@ export_env_dir() {
 }
 
 deploy_to_scratch() {
-  cd $BUILD_DIR
 
-  sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
-  sfdx_create_scratch $DEV_HUB_USERNAME $TARGET_SCRATCH_ORG_ALIAS
-  sfdx_source_push $TARGET_SCRATCH_ORG_ALIAS
-  sfdx_run_test $TARGET_SCRATCH_ORG_ALIAS
-  sfdx_delete_scratch $TARGET_SCRATCH_ORG_ALIAS
+  make_soap_request \
+    "$DEV_HUB_USERNAME" \
+    "$DEV_HUB_PASSWORD" \
+    "$DEV_HUB_TOKEN" \
+    "$DEV_HUB_IS_SANDBOX"
+
+  sfdx force:config:set \
+    instanceUrl="$INSTANCE_URL"
+
+  sfdx_create_scratch \
+    "$SESSION_ID" \
+    "$TARGET_SCRATCH_ORG_ALIAS"
+
+  sfdx_source_push \
+    "$TARGET_SCRATCH_ORG_ALIAS"
+
+  sfdx_run_test \
+    "$TARGET_SCRATCH_ORG_ALIAS"
+
+  sfdx_delete_scratch \
+    "$TARGET_SCRATCH_ORG_ALIAS"
 
 }
 
 install_package_qa() {
 
-  sfdx_auth_devhub_sfdxurl $devHubAuthFile $SFDX_DEV_HUB_AUTH_URL $DEV_HUB_USERNAME
-  sfdx_auth_sfdxurl $qaAuthFile $SFDX_AUTH_URL $QA_USERNAME
-  install_package_version $SFDX_PACKAGE_NAME $DEV_HUB_USERNAME $QA_USERNAME
+  make_soap_request \
+    "$DEV_HUB_USERNAME" \
+    "$DEV_HUB_PASSWORD" \
+    "$DEV_HUB_TOKEN" \
+    "$DEV_HUB_IS_SANDBOX"
+
+  export DEV_HUB_SESSION="$SESSION_ID"
+
+  make_soap_request \
+    "$STAGING_USERNAME" \
+    "$STAGING_PASSWORD" \
+    "$STAGING_TOKEN" \
+    "$STAGING_IS_SANDBOX"
+
+  export STAGING_SESSION="$SESSION_ID"
+
+  install_package_version \
+    "$SFDX_PACKAGE_NAME" \
+    "$DEV_HUB_SESSION" \
+    "$STAGING_SESSION"
 
 }
 
 header 'Welcome to aquiva-sfdx-buildpack!'
-
-export_env_dir
 
 log "Setting up paths ..."
 setup_dirs
@@ -86,19 +111,21 @@ if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
 fi
 
 # deploy on app review
+cd $BUILD_DIR
+
 if [ "$STAGE" == "" ]; then
-  header "Review app deploy"
+  header "Review App deploy ..."
 
   deploy_to_scratch
 
 fi
 
 # deploy on QA org
-if [ "$STAGE" == "DEV" ]; then
-  header "QA app deploy"
+if [ "$STAGE" == "STAGING" ]; then
+  header "Staging App deploy ..."
 
-  # deploy_to_scratch
-  cd $BUILD_DIR
+  deploy_to_scratch
+
   install_package_qa
 
 fi
