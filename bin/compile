@@ -95,43 +95,45 @@ setup_dirs
 log "Starting CLI installation ..."
 install_sfdx_cli $BUILD_DIR
 
-log "Starting jq installation ..."
-install_jq $BUILD_DIR
+cat /etc/os-release
 
-log "Starting xmllint installation ..."
-install_xmllint $BUILD_DIR
+# log "Starting jq installation ..."
+# install_jq $BUILD_DIR
 
-# Create .profile.d folder
-mkdir -p $BUILD_DIR/.profile.d
+# log "Starting xmllint installation ..."
+# install_xmllint $BUILD_DIR
 
-# if no .profile.d/path.sh, create one
-if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
-  log "Creating path.sh ..."
-  echo "echo \"Updating PATH to include Salesforce CLI ...\"
-  export PATH=\$PATH:/app/vendor/sfdx/cli/bin/" > $BUILD_DIR/.profile.d/path.sh
+# # Create .profile.d folder
+# mkdir -p $BUILD_DIR/.profile.d
 
-  log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
-fi
+# # if no .profile.d/path.sh, create one
+# if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
+#   log "Creating path.sh ..."
+#   echo "echo \"Updating PATH to include Salesforce CLI ...\"
+#   export PATH=\$PATH:/app/vendor/sfdx/cli/bin/" > $BUILD_DIR/.profile.d/path.sh
 
-# deploy on app review
-cd $BUILD_DIR
+#   log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
+# fi
 
-if [ "$STAGE" == "" ]; then
-  header "Review App deploy ..."
+# # deploy on app review
+# cd $BUILD_DIR
 
-  deploy_to_scratch
+# if [ "$STAGE" == "" ]; then
+#   header "Review App deploy ..."
 
-fi
+#   deploy_to_scratch
 
-# deploy on QA org
-if [ "$STAGE" == "STAGING" ]; then
-  header "Staging App deploy ..."
+# fi
 
-  deploy_to_scratch
+# # deploy on QA org
+# if [ "$STAGE" == "STAGING" ]; then
+#   header "Staging App deploy ..."
 
-  install_package_qa
+#   deploy_to_scratch
 
-fi
+#   install_package_qa
+
+# fi
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0
