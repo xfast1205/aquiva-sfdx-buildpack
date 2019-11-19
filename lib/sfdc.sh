@@ -5,8 +5,6 @@ source $BP_DIR/lib/lib.sh
 
 sfdx_create_scratch() {
   log "Creating scratch org ..."
-  echo "Token"
-  echo $1
 
   sfdx force:org:create -u $1 -f ./config/project-scratch-def.json -a $2
 }
