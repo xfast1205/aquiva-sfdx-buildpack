@@ -24,13 +24,7 @@ sfdx_run_test() {
 sfdx_delete_scratch() {
   log "Removing scratch org ..."
 
-  sfdx force:org:delete -u $1 -p
-}
-
-sfdx_deploy() {
-  log "Deploy started ..."
-
-  sfdx force:source:deploy -u $1 -p $2
+  sfdx force:org:delete -u $1 -v $2 -p
 }
 
 install_package_version() {

@@ -72,7 +72,8 @@ deploy_to_scratch() {
     "$TARGET_SCRATCH_ORG_ALIAS"
 
   sfdx_delete_scratch \
-    "$TARGET_SCRATCH_ORG_ALIAS"
+    "$TARGET_SCRATCH_ORG_ALIAS" \
+    "$SESSION_ID"
 
 }
 
