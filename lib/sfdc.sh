@@ -76,10 +76,13 @@ make_soap_request() {
   
   echo "$SOAP_FILE" > "login.txt"
 
+  echo "asdsadsdsasadsadssssd"
+  echo $4
+
   if [ "$4" == "true" ]; then
-    export SF_URL="test"
+    SF_URL="test"
   else
-    export SF_URL="login"
+    SF_URL="login"
   fi
   echo "--------"
   echo $SF_URL
