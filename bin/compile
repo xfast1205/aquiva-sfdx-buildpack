@@ -52,11 +52,6 @@ deploy_to_scratch() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
-  echo "$INSTANCE_URL"
-  SF_URL="https://$INSTANCE_URL"
-  echo "$SF_URL"
-  echo $SF_URL
-
   sfdx force:config:set \
     instanceUrl="$SF_URL"
 
