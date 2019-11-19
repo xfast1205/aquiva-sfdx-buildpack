@@ -45,7 +45,7 @@ deploy_to_scratch() {
     "$DEV_HUB_IS_SANDBOX"
 
   sfdx force:config:set \
-    instanceUrl="$INSTANCE_URL"
+    instanceUrl="$SERVER_URL"
 
   sfdx_create_scratch \
     "$SESSION_ID" \
@@ -95,45 +95,40 @@ setup_dirs
 log "Starting CLI installation ..."
 install_sfdx_cli $BUILD_DIR
 
-cat /etc/os-release
-
 # log "Starting jq installation ..."
-# install_jq $BUILD_DIR
+install_jq $BUILD_DIR
 
-# log "Starting xmllint installation ..."
-# install_xmllint $BUILD_DIR
+# Create .profile.d folder
+mkdir -p $BUILD_DIR/.profile.d
 
-# # Create .profile.d folder
-# mkdir -p $BUILD_DIR/.profile.d
+# if no .profile.d/path.sh, create one
+if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
+  log "Creating path.sh ..."
+  echo "echo \"Updating PATH to include Salesforce CLI ...\"
+  export PATH=\$PATH:/app/vendor/sfdx/cli/bin/" > $BUILD_DIR/.profile.d/path.sh
 
-# # if no .profile.d/path.sh, create one
-# if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
-#   log "Creating path.sh ..."
-#   echo "echo \"Updating PATH to include Salesforce CLI ...\"
-#   export PATH=\$PATH:/app/vendor/sfdx/cli/bin/" > $BUILD_DIR/.profile.d/path.sh
+  log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
+fi
 
-#   log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
-# fi
+# deploy on app review
+cd $BUILD_DIR
 
-# # deploy on app review
-# cd $BUILD_DIR
+if [ "$STAGE" == "" ]; then
+  header "Review App deploy ..."
 
-# if [ "$STAGE" == "" ]; then
-#   header "Review App deploy ..."
+  deploy_to_scratch
 
-#   deploy_to_scratch
+fi
 
-# fi
+# deploy on QA org
+if [ "$STAGE" == "STAGING" ]; then
+  header "Staging App deploy ..."
 
-# # deploy on QA org
-# if [ "$STAGE" == "STAGING" ]; then
-#   header "Staging App deploy ..."
+  deploy_to_scratch
 
-#   deploy_to_scratch
+  install_package_qa
 
-#   install_package_qa
-
-# fi
+fi
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0

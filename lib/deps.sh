@@ -32,13 +32,3 @@ install_npm() {
   sh install.sh
   npm install npm@latest
 }
-
-install_xmllint() {
-  BUILD_DIR=${1:-}
-  log "Installing xmllint ..."
-  mkdir -p "$BUILD_DIR/vendor/xmllint"
-  cd "$BUILD_DIR/vendor/xmllint"
-
-  wget --quiet -O xmllint http://xmlsoft.org/sources/libxml2-2.7.2.tar.gz
-  chmod +x xmllint
-}

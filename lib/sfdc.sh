@@ -86,8 +86,8 @@ parse_response() {
 
   echo "$RESPONSE" > "resp.xml"
 
-  export SESSION_ID=$(xmllint --xpath "//*[name()='sessionId']/text()" resp.xml)
-  export SERVER_URL=$(xmllint --xpath "//*[name()='serverUrl']/text()" resp.xml)
+  export SESSION_ID=$(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
+  export INSTANCE_URL=$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)
 
   parse_url
 }
@@ -95,5 +95,5 @@ parse_response() {
 parse_url() {
   IFS="/"
   read -ra ADDR <<< "$INSTANCE_URL"
-  export INSTANCE_URL="https://${ADDR[2]}"
+  export SERVER_URL="https://${ADDR[2]}"
 }
