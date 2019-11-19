@@ -89,23 +89,22 @@ make_soap_request() {
 get_session_id() {
   log "Parsing result ..."
 
-  AUTH_ID=$(make_soap_request $1 $2 $3 $4)
+  AUTH_SESSION=$(make_soap_request $1 $2 $3 $4)
 
-  echo "---------1"
-  echo $AUTH_ID
-  echo "---------1"
-
-  echo "$AUTH_ID" > "resp.xml"
+  echo "$AUTH_SESSION" > "resp.xml"
   echo $(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
 }
 
 get_instance_url() {
   log "Parsing result"
 
-  AUTH_ID=$(make_soap_request $1 $2 $3 $4)
+  AUTH_SERVER=$(make_soap_request $1 $2 $3 $4)
 
-  echo "$AUTH_ID" > "resp.xml"
+  echo "$AUTH_SERVER" > "resp.xml"
   IFS="/"
   read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
-  echo "https://${ADDR[2]}"
+  URL="https://${ADDR[2]}"
+  echo "--------5"
+  echo $URL
+  echo "--------5"
 }
