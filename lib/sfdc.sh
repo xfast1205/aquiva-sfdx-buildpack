@@ -84,9 +84,9 @@ get_session_id() {
 
   AUTH_ID=$(make_soap_request $1 $2 $3 $4)
 
-  echo "-----------"
-  echo "$AUTH_ID"
-  echo "-----------"
+  echo "---------1"
+  echo $AUTH_ID
+  echo "---------1"
 
   echo "$AUTH_ID" > "resp.xml"
   echo $(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)

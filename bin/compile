@@ -50,11 +50,6 @@ deploy_to_scratch() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
-  echo "--------2"
-  echo "$SESSION_ID"
-  echo "$INSTANCE_URL"
-  echo "--------2"
-
   sfdx force:config:set \
     instanceUrl="$INSTANCE_URL"
 
