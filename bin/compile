@@ -53,9 +53,12 @@ deploy_to_scratch() {
     "$DEV_HUB_IS_SANDBOX")
 
   echo "$INSTANCE_URL"
+  SF_URL="https://$INSTANCE_URL"
+  echo "$SF_URL"
+  echo $SF_URL
 
   sfdx force:config:set \
-    instanceUrl="https://$INSTANCE_URL"
+    instanceUrl="$SF_URL"
 
   sfdx_create_scratch \
     "$SESSION_ID" \
