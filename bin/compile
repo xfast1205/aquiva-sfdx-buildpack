@@ -116,8 +116,11 @@ setup_dirs
 log "Starting CLI installation ..."
 install_sfdx_cli $BUILD_DIR
 
-# log "Starting jq installation ..."
+log "Starting jq installation ..."
 install_jq $BUILD_DIR
+
+log "Setup enviroment variables ..."
+export_env_dir
 
 # Create .profile.d folder
 mkdir -p $BUILD_DIR/.profile.d
