@@ -27,6 +27,12 @@ sfdx_delete_scratch() {
   sfdx force:org:delete -u $1 -v $2 -p
 }
 
+create_package() {
+  log "Creating Package ..."
+
+  sfdx force:package:create --path force-app --name $1 --packagetype Unlocked -v $2
+}
+
 install_package_version() {
   PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $1 --json --concise | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
   echo $PACKAGE_VERSION_JSON
@@ -37,7 +43,6 @@ install_package_version() {
   PATCH_VERSION=$(jq -r '.PatchVersion?' <<< $PACKAGE_VERSION_JSON)
   BUILD_VERSION="NEXT"
   echo "Minor version: $MINOR_VERSION"
-  sfdx force:package:list -v $2
 
   if [ -z $MAJOR_VERSION ]; then MAJOR_VERSION=1; fi;
   if [ -z $MINOR_VERSION ]; then MINOR_VERSION=0; fi;
