@@ -73,10 +73,17 @@ make_soap_request() {
         </n1:login> \
       </env:Body> \
     </env:Envelope>"
-
+  
   echo "$SOAP_FILE" > "login.txt"
-  echo $(curl https://$4.salesforce.com/services/Soap/u/47.0 \
-    -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
+
+  if [ "$4" == "true" ]; then
+    export SF_URL="test"
+  else
+    export SF_URL="login"
+  fi
+
+  echo $(curl https://$SF_URL.salesforce.com/services/Soap/u/47.0 \
+      -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
 }
 
 get_session_id() {
