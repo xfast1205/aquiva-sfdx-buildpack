@@ -60,8 +60,6 @@ install_package_version() {
 }
 
 make_soap_request() {
-  log "Retrieve acess token ..."
-
   SOAP_FILE="<?xml version=\"1.0\" encoding=\"utf-8\" ?> \
     <env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" \
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
@@ -87,8 +85,6 @@ make_soap_request() {
 }
 
 get_session_id() {
-  log "Parsing result ..."
-
   AUTH_SESSION=$(make_soap_request $1 $2 $3 $4)
 
   echo "$AUTH_SESSION" > "resp.xml"
@@ -96,8 +92,6 @@ get_session_id() {
 }
 
 get_instance_url() {
-  log "Parsing result"
-
   AUTH_SERVER=$(make_soap_request $1 $2 $3 $4)
 
   echo "$AUTH_SERVER" > "resp.xml"
