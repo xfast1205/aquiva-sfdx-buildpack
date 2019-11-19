@@ -76,24 +76,17 @@ make_soap_request() {
   
   echo "$SOAP_FILE" > "login.txt"
 
-  echo "asdsadsdsasadsadssssd"
-  echo $4
-
   if [ "$4" == "true" ]; then
     SF_URL="test"
   else
     SF_URL="login"
   fi
-  echo "--------"
-  echo $SF_URL
-  echo "--------"
 
   echo $(curl https://$SF_URL.salesforce.com/services/Soap/u/47.0 \
       -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
 }
 
 get_session_id() {
-  echo "12345"
   log "Parsing result ..."
 
   AUTH_ID=$(make_soap_request $1 $2 $3 $4)
