@@ -37,6 +37,7 @@ install_package_version() {
   PATCH_VERSION=$(jq -r '.PatchVersion?' <<< $PACKAGE_VERSION_JSON)
   BUILD_VERSION="NEXT"
   echo "Minor version: $MINOR_VERSION"
+  sfdx force:package:list -v $2
 
   if [ -z $MAJOR_VERSION ]; then MAJOR_VERSION=1; fi;
   if [ -z $MINOR_VERSION ]; then MINOR_VERSION=0; fi;
