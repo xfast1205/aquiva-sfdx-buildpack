@@ -44,6 +44,8 @@ deploy_to_scratch() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
+  echo "$SESSION_ID"
+
   INSTANCE_URL=$(get_instance_url \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
