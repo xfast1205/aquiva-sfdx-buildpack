@@ -61,10 +61,6 @@ install_package_version() {
 
 make_soap_request() {
   log "Retrieve acess token ..."
-  echo "-------1"
-  echo $1
-  echo $2
-  echo "-------1"
 
   SOAP_FILE="<?xml version=\"1.0\" encoding=\"utf-8\" ?> \
     <env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" \
