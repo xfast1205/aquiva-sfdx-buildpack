@@ -93,6 +93,7 @@ make_soap_request() {
 }
 
 get_session_id() {
+  echo "12345"
   log "Parsing result ..."
 
   AUTH_ID=$(make_soap_request $1 $2 $3 $4)
