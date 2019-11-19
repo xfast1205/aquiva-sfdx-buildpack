@@ -96,4 +96,10 @@ parse_url() {
   IFS="/"
   read -ra ADDR <<< "$INSTANCE_URL"
   export SERVER_URL="https://${ADDR[2]}"
+
+  echo "$SERVER_URL"
+  echo "-------"
+  echo "$SESSION_ID"
+  echo "-------"
+  echo "$INSTANCE_URL"
 }
