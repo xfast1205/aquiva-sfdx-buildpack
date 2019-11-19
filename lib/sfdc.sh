@@ -81,6 +81,9 @@ make_soap_request() {
   else
     export SF_URL="login"
   fi
+  echo "--------"
+  echo $SF_URL
+  echo "--------"
 
   echo $(curl https://$SF_URL.salesforce.com/services/Soap/u/47.0 \
       -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
