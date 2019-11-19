@@ -37,6 +37,7 @@ export_env_dir() {
 }
 
 deploy_to_scratch() {
+  echo $DEV_HUB_USERNAME
 
   SESSION_ID=$(get_session_id \
     "$DEV_HUB_USERNAME" \
