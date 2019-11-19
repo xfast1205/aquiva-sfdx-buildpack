@@ -151,13 +151,23 @@ if [ "$STAGE" == "" ]; then
 
 fi
 
-# deploy on QA org
+# deploy on Staging org
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
   deploy_to_scratch
 
   install_package_staging
+
+fi
+
+# deploy on Prod org
+if [ "$STAGE" == "PROD" ]; then
+  header "Staging Prod deploy ..."
+
+  # deploy_to_scratch
+
+  # install_package_staging
 
 fi
 
