@@ -29,7 +29,7 @@ sfdx_delete_scratch() {
 
 install_package_version() {
   PACKAGE_NAME=$1
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $PACKAGE_NAME --concise --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $PACKAGE_NAME --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
   echo $PACKAGE_VERSION_JSON
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
