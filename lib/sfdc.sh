@@ -86,7 +86,7 @@ parse_response() {
 
   echo "$RESPONSE" > "resp.xml"
 
-  export SESSION_ID=$(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
+  SESSION_ID=$(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
   export INSTANCE_URL=$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)
 
   parse_url
