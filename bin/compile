@@ -44,8 +44,6 @@ deploy_to_scratch() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
-  echo "$SESSION_ID"
-
   INSTANCE_URL=$(get_instance_url \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
@@ -53,7 +51,6 @@ deploy_to_scratch() {
     "$DEV_HUB_IS_SANDBOX")
 
   SF_URL="https://$INSTANCE_URL"
-  echo "$SF_URL"
 
   sfdx force:config:set \
     instanceUrl="$SF_URL"
@@ -91,6 +88,8 @@ install_package_staging() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
+  SF_URL="https://$DEV_HUB_INSTANCE_URL"
+
   STAGING_SESSION_ID=$(get_session_id \
     "$STAGING_USERNAME" \
     "$STAGING_PASSWORD" \
@@ -102,6 +101,12 @@ install_package_staging() {
     "$STAGING_PASSWORD" \
     "$STAGING_TOKEN" \
     "$STAGING_IS_SANDBOX")
+
+  sfdx force:config:set \
+    instanceUrl="$SF_URL"
+
+  sfdx force:config:set \
+    defaultusername="$DEV_HUB_SESSION_ID"
 
   install_package_version \
     "$SFDX_PACKAGE_NAME" \
@@ -152,7 +157,7 @@ if [ "$STAGE" == "STAGING" ]; then
 
   deploy_to_scratch
 
-  install_package_qa
+  install_package_staging
 
 fi
 
