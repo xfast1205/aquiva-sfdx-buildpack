@@ -59,7 +59,7 @@ deploy_to_scratch() {
     instanceUrl="$SF_URL"
 
   sfdx force:config:set \
-    defaultusername="$DEV_HUB_USERNAME"
+    defaultusername="$SESSION_ID"
 
   sfdx_create_scratch \
     "$SESSION_ID" \
