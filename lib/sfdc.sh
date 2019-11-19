@@ -83,6 +83,7 @@ get_session_id() {
   log "Parsing result ..."
 
   AUTH_ID=$(make_soap_request $1 $2 $3 $4)
+  echo "$1"
 
   echo "$AUTH_ID" > "resp.xml"
   echo "Session"

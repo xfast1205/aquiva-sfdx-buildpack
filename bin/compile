@@ -44,7 +44,7 @@ deploy_to_scratch() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
-  INSTANCE_URL=$(get_session_id \
+  INSTANCE_URL=$(get_instance_url \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
@@ -79,7 +79,7 @@ install_package_staging() {
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
-  DEV_HUB_INSTANCE_URL=$(get_session_id \
+  DEV_HUB_INSTANCE_URL=$(get_instance_url \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
@@ -91,7 +91,7 @@ install_package_staging() {
     "$STAGING_TOKEN" \
     "$STAGING_IS_SANDBOX")
 
-  STAGING_INSTANCE_URL=$(get_session_id \
+  STAGING_INSTANCE_URL=$(get_instance_url \
     "$STAGING_USERNAME" \
     "$STAGING_PASSWORD" \
     "$STAGING_TOKEN" \
