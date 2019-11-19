@@ -104,8 +104,9 @@ get_instance_url() {
   echo "$AUTH_SERVER" > "resp.xml"
   IFS="/"
   read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
-  URL="http${ADDR[2]}"
+  URL="${ADDR[2]}"
+  INSTANCE_SERVER="$PREFIX$URL"
   echo "--------5"
-  echo $URL
+  echo $INSTANCE_SERVER
   echo "--------5"
 }
