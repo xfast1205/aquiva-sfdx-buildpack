@@ -155,7 +155,7 @@ fi
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
-  # deploy_to_scratch
+  deploy_to_scratch
 
   install_package_staging
 
