@@ -6,7 +6,7 @@ source $BP_DIR/lib/lib.sh
 sfdx_create_scratch() {
   log "Creating scratch org ..."
 
-  sfdx force:org:create -u $1 -f ./config/project-scratch-def.json -a $2
+  sfdx force:org:create -v $1 -f ./config/project-scratch-def.json -a $2
 }
 
 sfdx_source_push() {
