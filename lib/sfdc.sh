@@ -99,11 +99,12 @@ get_instance_url() {
   log "Parsing result"
 
   AUTH_SERVER=$(make_soap_request $1 $2 $3 $4)
+  PREFIX="https://"
 
   echo "$AUTH_SERVER" > "resp.xml"
   IFS="/"
   read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
-  URL="https://${ADDR[2]}"
+  URL="$PREFIX$ADDR[2]"
   echo "--------5"
   echo $URL
   echo "--------5"
