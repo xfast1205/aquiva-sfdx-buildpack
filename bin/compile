@@ -38,28 +38,28 @@ export_env_dir() {
 
 deploy_to_scratch() {
 
-  SESSION_ID=$(get_session_id \
+  RESPONSE_DEV_HUB=$(make_soap_request \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
-  INSTANCE_URL=$(get_instance_url \
-    "$DEV_HUB_USERNAME" \
-    "$DEV_HUB_PASSWORD" \
-    "$DEV_HUB_TOKEN" \
-    "$DEV_HUB_IS_SANDBOX")
+  DEV_HUB_SESSION_ID=$(get_session_id \
+    "$RESPONSE_DEV_HUB")
 
-  SF_URL="https://$INSTANCE_URL"
+  DEV_HUB_INSTANCE_URL=$(get_instance_url \
+    "$RESPONSE_DEV_HUB")
+
+  SF_URL="https://$DEV_HUB_INSTANCE_URL"
 
   sfdx force:config:set \
     instanceUrl="$SF_URL"
 
   sfdx force:config:set \
-    defaultusername="$SESSION_ID"
+    defaultusername="$DEV_HUB_SESSION_ID"
 
   sfdx_create_scratch \
-    "$SESSION_ID" \
+    "$DEV_HUB_SESSION_ID" \
     "$TARGET_SCRATCH_ORG_ALIAS"
 
   sfdx_source_push \
@@ -70,7 +70,7 @@ deploy_to_scratch() {
 
   sfdx_delete_scratch \
     "$TARGET_SCRATCH_ORG_ALIAS" \
-    "$SESSION_ID"
+    "$DEV_HUB_SESSION_ID"
 
 }
 
