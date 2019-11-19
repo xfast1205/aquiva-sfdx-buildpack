@@ -79,20 +79,18 @@ make_soap_request() {
   fi
 
   echo $(curl https://$SF_URL.salesforce.com/services/Soap/u/47.0 \
-      -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
+    -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
 }
 
 get_session_id() {
-  AUTH_SESSION=$(make_soap_request $1 $2 $3 $4)
+  echo "$1" > "resp.xml"
 
-  echo "$AUTH_SESSION" > "resp.xml"
   echo $(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
 }
 
 get_instance_url() {
-  AUTH_SERVER=$(make_soap_request $1 $2 $3 $4)
+  echo "$1" > "resp.xml"
 
-  echo "$AUTH_SERVER" > "resp.xml"
   IFS="/"
   read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
   echo "${ADDR[2]}"

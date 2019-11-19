@@ -76,31 +76,31 @@ deploy_to_scratch() {
 
 install_package_staging() {
 
-  DEV_HUB_SESSION_ID=$(get_session_id \
+  RESPONSE_DEV_HUB=$(make_soap_request \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
     "$DEV_HUB_IS_SANDBOX")
 
+  DEV_HUB_SESSION_ID=$(get_session_id \
+    "$RESPONSE_DEV_HUB")
+
   DEV_HUB_INSTANCE_URL=$(get_instance_url \
-    "$DEV_HUB_USERNAME" \
-    "$DEV_HUB_PASSWORD" \
-    "$DEV_HUB_TOKEN" \
-    "$DEV_HUB_IS_SANDBOX")
+    "$RESPONSE_DEV_HUB")
 
   SF_URL="https://$DEV_HUB_INSTANCE_URL"
 
-  STAGING_SESSION_ID=$(get_session_id \
+  RESPONSE_STAGING=$(make_soap_request \
     "$STAGING_USERNAME" \
     "$STAGING_PASSWORD" \
     "$STAGING_TOKEN" \
     "$STAGING_IS_SANDBOX")
 
+  STAGING_SESSION_ID=$(get_session_id \
+    "$RESPONSE_STAGING")
+
   STAGING_INSTANCE_URL=$(get_instance_url \
-    "$STAGING_USERNAME" \
-    "$STAGING_PASSWORD" \
-    "$STAGING_TOKEN" \
-    "$STAGING_IS_SANDBOX")
+    "$RESPONSE_STAGING")
 
   sfdx force:config:set \
     instanceUrl="$SF_URL"
