@@ -84,6 +84,10 @@ get_session_id() {
 
   AUTH_ID=$(make_soap_request $1 $2 $3 $4)
 
+  echo "-----------"
+  echo "$AUTH_ID"
+  echo "-----------"
+
   echo "$AUTH_ID" > "resp.xml"
   echo $(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
 }
@@ -94,8 +98,6 @@ get_instance_url() {
   AUTH_ID=$(make_soap_request $1 $2 $3 $4)
 
   echo "$AUTH_ID" > "resp.xml"
-  echo "Server"
-  echo "$AUTH_ID"
   IFS="/"
   read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
   echo "https://${ADDR[2]}"
