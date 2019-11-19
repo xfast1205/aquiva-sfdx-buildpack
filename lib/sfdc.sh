@@ -99,7 +99,6 @@ get_instance_url() {
   log "Parsing result"
 
   AUTH_SERVER=$(make_soap_request $1 $2 $3 $4)
-  PREFIX="https://"
 
   echo "$AUTH_SERVER" > "resp.xml"
   IFS="/"
