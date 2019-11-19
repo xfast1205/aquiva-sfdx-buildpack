@@ -75,31 +75,22 @@ make_soap_request() {
     </env:Envelope>"
 
   echo "$SOAP_FILE" > "login.txt"
-  export RESPONSE=$(curl https://$4.salesforce.com/services/Soap/u/47.0 \
+  echo $(curl https://$4.salesforce.com/services/Soap/u/47.0 \
     -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
-
-  parse_response
 }
 
-parse_response() {
-  echo "Parsing result"
+get_session_id() {
+  log "Parsing result ..."
 
-  echo "$RESPONSE" > "resp.xml"
-
-  SESSION_ID=$(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
-  export INSTANCE_URL=$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)
-
-  parse_url
+  echo "$(make_soap_request $1 $2 $3 $4)" > "resp.xml"
+  echo $(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
 }
 
-parse_url() {
+get_instance_url() {
+  log "Parsing result"
+
+  echo "$(make_soap_request $1 $2 $3 $4)" > "resp.xml"
   IFS="/"
-  read -ra ADDR <<< "$INSTANCE_URL"
-  export SERVER_URL="https://${ADDR[2]}"
-
-  echo "$SERVER_URL"
-  echo "-------"
-  echo "$SESSION_ID"
-  echo "-------"
-  echo "$INSTANCE_URL"
+  read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
+  echo "https://${ADDR[2]}"
 }

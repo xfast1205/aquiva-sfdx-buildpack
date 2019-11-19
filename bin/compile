@@ -38,14 +38,20 @@ export_env_dir() {
 
 deploy_to_scratch() {
 
-  make_soap_request \
+  SESSION_ID=$(get_session_id \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
-    "$DEV_HUB_IS_SANDBOX"
+    "$DEV_HUB_IS_SANDBOX")
+
+  INSTANCE_URL=$(get_session_id \
+    "$DEV_HUB_USERNAME" \
+    "$DEV_HUB_PASSWORD" \
+    "$DEV_HUB_TOKEN" \
+    "$DEV_HUB_IS_SANDBOX")
 
   sfdx force:config:set \
-    instanceUrl="$SERVER_URL"
+    instanceUrl="$INSTANCE_URL"
 
   sfdx_create_scratch \
     "$SESSION_ID" \
@@ -62,28 +68,36 @@ deploy_to_scratch() {
 
 }
 
-install_package_qa() {
+install_package_staging() {
 
-  make_soap_request \
+  DEV_HUB_SESSION_ID=$(get_session_id \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
-    "$DEV_HUB_IS_SANDBOX"
+    "$DEV_HUB_IS_SANDBOX")
 
-  export DEV_HUB_SESSION="$SESSION_ID"
+  DEV_HUB_INSTANCE_URL=$(get_session_id \
+    "$DEV_HUB_USERNAME" \
+    "$DEV_HUB_PASSWORD" \
+    "$DEV_HUB_TOKEN" \
+    "$DEV_HUB_IS_SANDBOX")
 
-  make_soap_request \
+  STAGING_SESSION_ID=$(get_session_id \
     "$STAGING_USERNAME" \
     "$STAGING_PASSWORD" \
     "$STAGING_TOKEN" \
-    "$STAGING_IS_SANDBOX"
+    "$STAGING_IS_SANDBOX")
 
-  export STAGING_SESSION="$SESSION_ID"
+  STAGING_INSTANCE_URL=$(get_session_id \
+    "$STAGING_USERNAME" \
+    "$STAGING_PASSWORD" \
+    "$STAGING_TOKEN" \
+    "$STAGING_IS_SANDBOX")
 
   install_package_version \
     "$SFDX_PACKAGE_NAME" \
-    "$DEV_HUB_SESSION" \
-    "$STAGING_SESSION"
+    "$DEV_HUB_SESSION_ID" \
+    "$STAGING_SESSION_ID"
 
 }
 
