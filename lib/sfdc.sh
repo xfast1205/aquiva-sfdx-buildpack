@@ -31,7 +31,7 @@ install_package_version() {
   echo "----"
   echo $1
   echo $2
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 --json -p $1 | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $1 --json --concise | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
   echo $PACKAGE_VERSION_JSON
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)

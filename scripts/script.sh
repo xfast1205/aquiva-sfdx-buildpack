@@ -74,6 +74,8 @@ heroku config:set PROD_USERNAME="aryzhkov@curious-badger-oa5jdm.com" -a $HEROKU_
 heroku config:set PROD_PASSWORD="lifeisgame1" -a $HEROKU_PROD_APP_NAME
 heroku config:set PROD_TOKEN="1vwkH2RPVsqgjv5Qyb2Dcfvg" -a $HEROKU_PROD_APP_NAME
 heroku config:set PROD_IS_SANDBOX=false -a $HEROKU_PROD_APP_NAME
+heroku config:set SFDX_PACKAGE_NAME=mypipedemo -a $HEROKU_PROD_APP_NAME
+heroku config:set SFDX_PACKAGE_NAME=mypipedemo -a $HEROKU_STAGING_APP_NAME
 
 # Add buildpacks to apps (to use latest remove version info)
 heroku buildpacks:add -i 1 https://github.com/xfast1205/aquiva-sfdx-buildpack -a $HEROKU_STAGING_APP_NAME
