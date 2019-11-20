@@ -36,7 +36,7 @@ install_npm() {
 check_project_file() {
   FILE=./sfdx-project.json
   if [ ! -f "$FILE" ]; then
-    echo "Please add sfdx-project1.json file"
+    echo "Please provide sfdx-project1.json file"
     exit 0
   fi
 }
