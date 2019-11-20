@@ -121,6 +121,7 @@ install_package_staging() {
 header 'Welcome to aquiva-sfdx-buildpack!'
 
 log "Checking project file"
+pwd
 cd "$BUILD_DIR"
 ls -la
 pwd
