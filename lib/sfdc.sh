@@ -54,6 +54,9 @@ install_package_version() {
   export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
   echo "Package version: $PACKAGE_VERSION_ID"
 
+  sfdx force:config:set instanceUrl="$4"
+  sfdx force:config:set defaultusername="$3"
+
   sfdx force:package:install --package $PACKAGE_VERSION_ID --wait 100 --publishwait 100 --noprompt -u $3
 }
 
