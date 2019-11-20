@@ -121,11 +121,8 @@ install_package_staging() {
 header 'Welcome to aquiva-sfdx-buildpack!'
 
 log "Checking project file"
-pwd
 cd "$BUILD_DIR"
-ls -la
-pwd
-check_project_file
+check_project_file $BUILD_DIR
 
 log "Setting up paths ..."
 setup_dirs
@@ -165,9 +162,9 @@ fi
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
-  deploy_to_scratch
+  # deploy_to_scratch
 
-  install_package_staging
+  # install_package_staging
 
 fi
 
