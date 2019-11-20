@@ -158,7 +158,7 @@ fi
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
-  # deploy_to_scratch
+  deploy_to_scratch
 
   install_package_staging
 
@@ -166,7 +166,7 @@ fi
 
 # deploy on Prod org
 if [ "$STAGE" == "PROD" ]; then
-  header "Staging Prod deploy ..."
+  header "Prod App deploy ..."
 
   # deploy_to_scratch
 
