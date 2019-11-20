@@ -8,7 +8,7 @@ set -o errexit    # always exit on error
 set -o pipefail   # don't ignore exit codes when piping output
 unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
 
-### Configure directories
+# Configure directories
 
 BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
@@ -16,11 +16,14 @@ ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 NUMBER=$(date +%s)
 TARGET_SCRATCH_ORG_ALIAS="scratch-$NUMBER"
-vendorDir="vendor/sfdx"
+
+# Import dependencies
 
 source $BP_DIR/lib/lib.sh
 source $BP_DIR/lib/deps.sh
 source $BP_DIR/lib/sfdc.sh
+
+# Prepare environment
 
 setup_dirs() {
   export PATH="$BUILD_DIR/vendor/sfdx/cli/bin:$PATH"
@@ -36,6 +39,8 @@ export_env_dir() {
   fi
 }
 
+# SFDC processes
+
 deploy_to_scratch() {
 
   RESPONSE_DEV_HUB=$(make_soap_request \
@@ -50,13 +55,9 @@ deploy_to_scratch() {
   DEV_HUB_INSTANCE_URL=$(get_instance_url \
     "$RESPONSE_DEV_HUB")
 
-  SF_URL="https://$DEV_HUB_INSTANCE_URL"
-
-  sfdx force:config:set \
-    instanceUrl="$SF_URL"
-
-  sfdx force:config:set \
-    defaultusername="$DEV_HUB_SESSION_ID"
+  prepare_sfdc_environment \
+    "$DEV_HUB_INSTANCE_URL" \
+    "$DEV_HUB_SESSION_ID"
 
   sfdx_create_scratch \
     "$DEV_HUB_SESSION_ID" \
@@ -88,8 +89,6 @@ install_package_staging() {
   DEV_HUB_INSTANCE_URL=$(get_instance_url \
     "$RESPONSE_DEV_HUB")
 
-  SF_URL="https://$DEV_HUB_INSTANCE_URL"
-
   RESPONSE_STAGING=$(make_soap_request \
     "$STAGING_USERNAME" \
     "$STAGING_PASSWORD" \
@@ -102,13 +101,11 @@ install_package_staging() {
   STAGING_INSTANCE_URL=$(get_instance_url \
     "$RESPONSE_STAGING")
 
+  prepare_sfdc_environment \
+    "$DEV_HUB_INSTANCE_URL" \
+    "$DEV_HUB_SESSION_ID"
+
   STAGING_SF_URL="https://$STAGING_INSTANCE_URL"
-
-  sfdx force:config:set \
-    instanceUrl="$SF_URL"
-
-  sfdx force:config:set \
-    defaultusername="$DEV_HUB_SESSION_ID"
 
   install_package_version \
     "$SFDX_PACKAGE_NAME" \
@@ -120,9 +117,8 @@ install_package_staging() {
 
 header 'Welcome to aquiva-sfdx-buildpack!'
 
-log "Checking project file"
-cd "$BUILD_DIR"
-check_project_file $BUILD_DIR
+log "Checking project file ..."
+verify_project_file $BUILD_DIR
 
 log "Setting up paths ..."
 setup_dirs
@@ -148,7 +144,8 @@ if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
   log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
 fi
 
-# deploy on app review
+# Deploy on app review
+
 cd $BUILD_DIR
 
 if [ "$STAGE" == "" ]; then
@@ -158,7 +155,8 @@ if [ "$STAGE" == "" ]; then
 
 fi
 
-# deploy on Staging org
+# Deploy on Staging org
+
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
@@ -168,7 +166,8 @@ if [ "$STAGE" == "STAGING" ]; then
 
 fi
 
-# deploy on Prod org
+# Deploy on Prod org
+
 if [ "$STAGE" == "PROD" ]; then
   header "Prod App deploy ..."
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SFDC deps for aquiva buildpack
+# SFDC dependencies for aquiva buildpack
 
 source $BP_DIR/lib/lib.sh
 
@@ -78,6 +78,16 @@ is_package_exists_in_project_file() {
   fi
 }
 
+prepare_sfdc_environment() {
+  SF_URL="https://$1"
+
+  sfdx force:config:set \
+    instanceUrl="$SF_URL"
+
+  sfdx force:config:set \
+    defaultusername="$2"
+}
+
 install_package_version() {
   PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $1 --json --concise | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
   echo $PACKAGE_VERSION_JSON
@@ -99,47 +109,6 @@ install_package_version() {
   export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
   echo "Package version: $PACKAGE_VERSION_ID"
 
-  sfdx force:config:set instanceUrl="$4"
-  sfdx force:config:set defaultusername="$3"
-
+  prepare_sfdc_environment "$4" "$3"
   sfdx force:package:install --package $PACKAGE_VERSION_ID --wait 100 --publishwait 100 --noprompt -u $3
-}
-
-make_soap_request() {
-  SOAP_FILE="<?xml version=\"1.0\" encoding=\"utf-8\" ?> \
-    <env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" \
-        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
-        xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"> \
-      <env:Body> \
-        <n1:login xmlns:n1=\"urn:partner.soap.sforce.com\"> \
-          <n1:username>$1</n1:username> \
-          <n1:password>$2$3</n1:password> \
-        </n1:login> \
-      </env:Body> \
-    </env:Envelope>"
-  
-  echo "$SOAP_FILE" > "login.txt"
-
-  if [ "$4" == "true" ]; then
-    SF_URL="test"
-  else
-    SF_URL="login"
-  fi
-
-  echo $(curl https://$SF_URL.salesforce.com/services/Soap/u/47.0 \
-    -H "Content-Type: text/xml; charset=UTF-8" -H "SOAPAction: login" -d @login.txt)
-}
-
-get_session_id() {
-  echo "$1" > "resp.xml"
-
-  echo $(sed -n '/sessionId/{s/.*<sessionId>//;s/<\/sessionId.*//;p;}' resp.xml)
-}
-
-get_instance_url() {
-  echo "$1" > "resp.xml"
-
-  IFS="/"
-  read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
-  echo "${ADDR[2]}"
 }
