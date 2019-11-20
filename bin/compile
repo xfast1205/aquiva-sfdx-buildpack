@@ -123,6 +123,7 @@ header 'Welcome to aquiva-sfdx-buildpack!'
 log "Checking project file"
 cd "$BUILD_DIR"
 ls -la
+pwd
 check_project_file
 
 log "Setting up paths ..."
