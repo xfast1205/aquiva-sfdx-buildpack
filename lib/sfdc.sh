@@ -6,31 +6,76 @@ source $BP_DIR/lib/lib.sh
 sfdx_create_scratch() {
   log "Creating scratch org ..."
 
-  sfdx force:org:create -v $1 -f ./config/project-scratch-def.json -a $2
+  sfdx force:org:create \
+    -v $1 \
+    -f ./config/project-scratch-def.json \
+    -a $2
 }
 
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
 
-  sfdx force:source:push -u $1
+  sfdx force:source:push \
+    -u $1
 }
 
 sfdx_run_test() {
   log "Running org tests ..."
 
-  sfdx force:apex:test:run -u $1 -r human -y -w 1000 --verbose -l RunLocalTests
+  sfdx force:apex:test:run \
+    -u $1 \
+    -r human \
+    -y \
+    -w 1000 \
+    --verbose \
+    -l RunLocalTests
 }
 
 sfdx_delete_scratch() {
   log "Removing scratch org ..."
 
-  sfdx force:org:delete -u $1 -v $2 -p
+  sfdx force:org:delete \
+    -u $1 \
+    -v $2 \
+    -p
 }
 
 create_package() {
   log "Creating Package ..."
 
-  sfdx force:package:create --path force-app --name $1 --packagetype Unlocked -v $2
+  sfdx force:package:create \
+    --path force-app \
+    --name $1 \
+    --packagetype $2 \
+    -v $3
+}
+
+is_package_exists_on_devhub() {
+  log "Checking Package on Dev Hub ..."
+
+  IS_PACKAGE_EXISTS="$(eval sfdx force:package:list -v $1 --json |
+    jq -r --arg PACKAGE_NAME "$2" '.result[]
+      | select(.Name==$PACKAGE_NAME)')"
+
+  if [ -z "$IS_PACKAGE_EXISTS" ]; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
+is_package_exists_in_project_file() {
+  log "Checking Package in project files ..."
+
+  IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
+    jq -r --arg PACKAGE_NAME "$2" '.packageDirectories[]
+      | select(.package==$PACKAGE_NAME)')"
+
+  if [ -z "$IS_PACKAGE_EXISTS" ]; then
+    echo "false"
+  else
+    echo "true"
+  fi
 }
 
 install_package_version() {

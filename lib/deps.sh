@@ -6,8 +6,8 @@ source $BP_DIR/lib/lib.sh
 install_sfdx_cli() {
   BUILD_DIR=${1:-}
   log "Downloading Salesforce CLI tarball ..."
-  mkdir sfdx && curl --silent --location "https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable/sfdx-cli-linux-x64.tar.xz" | tar xJ -C sfdx --strip-components 1
 
+  mkdir sfdx && curl --silent --location "https://developer.salesforce.com/media/salesforce-cli/sfdx-cli/channels/stable/sfdx-cli-linux-x64.tar.xz" | tar xJ -C sfdx --strip-components 1
   log "Copying Salesforce CLI binary ..."
 
   rm -rf "$BUILD_DIR/vendor/sfdx"
@@ -19,6 +19,7 @@ install_sfdx_cli() {
 install_jq() {
   BUILD_DIR=${1:-}
   log "Downloading jq ..."
+
   mkdir -p "$BUILD_DIR/vendor/sfdx/jq"
   cd "$BUILD_DIR/vendor/sfdx/jq"
   wget --quiet -O jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
@@ -34,7 +35,8 @@ install_npm() {
 }
 
 check_project_file() {
-  FILE="$1/sfdx-project1.json"
+  FILE="$1/sfdx-project.json"
+
   if [ ! -f "$FILE" ]; then
     echo "Please provide sfdx-project.json file"
     exit 1
