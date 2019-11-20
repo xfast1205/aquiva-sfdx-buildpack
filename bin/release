@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo "releaseee phase"
 cat << EOF
 ---
 addons: []
