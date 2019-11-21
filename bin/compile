@@ -59,6 +59,10 @@ deploy_to_scratch() {
     "$DEV_HUB_INSTANCE_URL" \
     "$DEV_HUB_SESSION_ID"
 
+  validate_package \
+    "$DEV_HUB_SESSION_ID" \
+    "$SFDX_PACKAGE_NAME"
+
   sfdx_create_scratch \
     "$DEV_HUB_SESSION_ID" \
     "$TARGET_SCRATCH_ORG_ALIAS"
@@ -117,7 +121,8 @@ install_package_staging() {
 
 header 'Welcome to aquiva-sfdx-buildpack!'
 
-log "Checking project file ..."
+# Repository validations
+log "Verifying files ..."
 verify_project_file $BUILD_DIR
 
 log "Setting up paths ..."

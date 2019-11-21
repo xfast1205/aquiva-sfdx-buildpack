@@ -43,8 +43,13 @@ sfdx_delete_scratch() {
 create_package() {
   log "Creating Package ..."
 
+  PACKAGE_PATH="$(cat sfdx-project.json |
+    jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
+      | select(.package==$PACKAGE_NAME)
+      | .path')"
+
   sfdx force:package:create \
-    --path force-app \
+    --path "$PACKAGE_PATH" \
     --name $1 \
     --packagetype $2 \
     -v $3
@@ -68,7 +73,7 @@ is_package_exists_in_project_file() {
   log "Checking Package in project files ..."
 
   IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
-    jq -r --arg PACKAGE_NAME "$2" '.packageDirectories[]
+    jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)')"
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
@@ -86,6 +91,16 @@ prepare_sfdc_environment() {
 
   sfdx force:config:set \
     defaultusername="$2"
+}
+
+validate_package() {
+  PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
+  PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
+
+  if [ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" ]; then
+    echo "Please install your package in you Dev Hub and update sfdx-project.json file"
+    exit 1
+  fi
 }
 
 install_package_version() {
