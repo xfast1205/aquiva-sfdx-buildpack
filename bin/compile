@@ -47,7 +47,7 @@ deploy_to_scratch() {
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
-    "$DEV_HUB_IS_SANDBOX")
+    "false")
 
   DEV_HUB_SESSION_ID=$(get_session_id \
     "$RESPONSE_DEV_HUB")
@@ -79,13 +79,53 @@ deploy_to_scratch() {
 
 }
 
+install_package_dev() {
+
+  RESPONSE_DEV_HUB=$(make_soap_request \
+    "$DEV_HUB_USERNAME" \
+    "$DEV_HUB_PASSWORD" \
+    "$DEV_HUB_TOKEN" \
+    "false")
+
+  DEV_HUB_SESSION_ID=$(get_session_id \
+    "$RESPONSE_DEV_HUB")
+
+  DEV_HUB_INSTANCE_URL=$(get_instance_url \
+    "$RESPONSE_DEV_HUB")
+
+  RESPONSE_DEV=$(make_soap_request \
+    "$DEV_USERNAME" \
+    "$DEV_PASSWORD" \
+    "$DEV_TOKEN" \
+    "$DEV_IS_SANDBOX")
+
+  DEV_SESSION_ID=$(get_session_id \
+    "$RESPONSE_DEV")
+
+  DEV_INSTANCE_URL=$(get_instance_url \
+    "$RESPONSE_DEV")
+
+  prepare_sfdc_environment \
+    "$DEV_HUB_INSTANCE_URL" \
+    "$DEV_HUB_SESSION_ID"
+
+  DEV_SF_URL="https://$DEV_INSTANCE_URL"
+
+  install_package_version \
+    "$SFDX_PACKAGE_NAME" \
+    "$DEV_HUB_SESSION_ID" \
+    "$DEV_SESSION_ID" \
+    "$DEV_SF_URL"
+
+}
+
 install_package_staging() {
 
   RESPONSE_DEV_HUB=$(make_soap_request \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
     "$DEV_HUB_TOKEN" \
-    "$DEV_HUB_IS_SANDBOX")
+    "false")
 
   DEV_HUB_SESSION_ID=$(get_session_id \
     "$RESPONSE_DEV_HUB")
@@ -160,6 +200,17 @@ if [ "$STAGE" == "" ]; then
 
 fi
 
+# Deploy on Dev org
+
+if [ "$STAGE" == "DEV" ]; then
+  header "Develop App deploy ..."
+
+  deploy_to_scratch
+
+  install_package_dev
+
+fi
+
 # Deploy on Staging org
 
 if [ "$STAGE" == "STAGING" ]; then
@@ -168,17 +219,6 @@ if [ "$STAGE" == "STAGING" ]; then
   deploy_to_scratch
 
   install_package_staging
-
-fi
-
-# Deploy on Prod org
-
-if [ "$STAGE" == "PROD" ]; then
-  header "Prod App deploy ..."
-
-  # deploy_to_scratch
-
-  # install_package_staging
 
 fi
 
