@@ -83,6 +83,18 @@ is_package_exists_in_project_file() {
   fi
 }
 
+is_namespace_exists_in_project_file() {
+  IS_NAMESPACE_EXISTS="$(cat sfdx-project.json |
+    jq -r --arg NAMESPACE "$1" '.packageDirectories[]
+      | select(.namespace==$NAMESPACE)')"
+
+  if [ -z "$IS_NAMESPACE_EXISTS" ]; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
 prepare_sfdc_environment() {
   SF_URL="https://$1"
 
@@ -96,9 +108,10 @@ prepare_sfdc_environment() {
 validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
+  NAMESPACE_IN_PROJECT_FILE=$(is_namespace_exists_in_project_file "$3")
 
-  if [ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" ]; then
-    echo "Please install your package in your Dev Hub and update sfdx-project.json file"
+  if [ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" || "$NAMESPACE_IN_PROJECT_FILE" == "false" ]; then
+    echo "Please install your package in your Dev Hub and update sfdx-project.json file and register namespace"
     exit 1
   fi
 }
