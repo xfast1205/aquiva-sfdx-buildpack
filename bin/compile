@@ -145,9 +145,7 @@ install_package_staging() {
   STAGING_INSTANCE_URL=$(get_instance_url \
     "$RESPONSE_STAGING")
 
-  validate_package \
-    "$DEV_HUB_SESSION_ID" \
-    "$SFDX_PACKAGE_NAME" \
+  validate_namespace \
     "$PACKAGE_NAMESPACE"
 
   prepare_sfdc_environment \

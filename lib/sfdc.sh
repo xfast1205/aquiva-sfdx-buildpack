@@ -108,10 +108,18 @@ prepare_sfdc_environment() {
 validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
-  NAMESPACE_IN_PROJECT_FILE=$(is_namespace_exists_in_project_file "$3")
 
-  if [ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" || "$NAMESPACE_IN_PROJECT_FILE" == "false" ]; then
-    echo "Please install your package in your Dev Hub and update sfdx-project.json file and register namespace"
+  if [ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" ]; then
+    echo "Please install your package in your Dev Hub and update sfdx-project.json file"
+    exit 1
+  fi
+}
+
+validate_namespace() {
+  NAMESPACE_IN_PROJECT_FILE=$(is_namespace_exists_in_project_file "$1")
+
+  if [ "$NAMESPACE_IN_PROJECT_FILE" == "false" ]; then
+    echo "Please register namespace on your Dev Hub and update sfdx-project.json file"
     exit 1
   fi
 }
