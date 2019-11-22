@@ -121,6 +121,9 @@ install_package_dev() {
 
 install_package_staging() {
 
+  validate_namespace \
+    "$PACKAGE_NAMESPACE"
+
   RESPONSE_DEV_HUB=$(make_soap_request \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
@@ -144,9 +147,6 @@ install_package_staging() {
 
   STAGING_INSTANCE_URL=$(get_instance_url \
     "$RESPONSE_STAGING")
-
-  validate_namespace \
-    "$PACKAGE_NAMESPACE"
 
   prepare_sfdc_environment \
     "$DEV_HUB_INSTANCE_URL" \
