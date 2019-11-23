@@ -125,26 +125,37 @@ validate_namespace() {
 }
 
 install_package_version() {
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $1 --json --concise | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
-  echo $PACKAGE_VERSION_JSON
+  log "Installing new package version ..."
+
+  VERSION_NUMBER=$(get_package_version $1 $2)
+
+  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
+   jq -r '.result.SubscriberPackageVersionId')"
+
+  prepare_sfdc_environment "$4" "$3"
+  sfdx force:package:install \
+    --package $PACKAGE_VERSION_ID \
+    --wait 100 \
+    --publishwait 100 \
+    --noprompt \
+    -u $3
+}
+
+get_package_version() {
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $1 --json --concise |
+    jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
   MAJOR_VERSION=$(jq -r '.MajorVersion?' <<< $PACKAGE_VERSION_JSON)
   MINOR_VERSION=$(jq -r '.MinorVersion?' <<< $PACKAGE_VERSION_JSON)
   PATCH_VERSION=$(jq -r '.PatchVersion?' <<< $PACKAGE_VERSION_JSON)
   BUILD_VERSION="NEXT"
-  echo "Minor version: $MINOR_VERSION"
 
   if [ -z $MAJOR_VERSION ]; then MAJOR_VERSION=1; fi;
   if [ -z $MINOR_VERSION ]; then MINOR_VERSION=0; fi;
   if [ -z $PATCH_VERSION ]; then PATCH_VERSION=0; fi;
   if [ "$IS_RELEASED" == "true" ]; then MINOR_VERSION=$(($MINOR_VERSION+1)); fi;
   VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
-  echo "Version number: $VERSION_NUMBER"
 
-  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json | jq -r '.result.SubscriberPackageVersionId')"
-  echo "Package version: $PACKAGE_VERSION_ID"
-
-  prepare_sfdc_environment "$4" "$3"
-  sfdx force:package:install --package $PACKAGE_VERSION_ID --wait 100 --publishwait 100 --noprompt -u $3
+  echo "$VERSION_NUMBER"
 }

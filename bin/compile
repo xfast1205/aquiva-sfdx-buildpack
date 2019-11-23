@@ -154,11 +154,11 @@ install_package_staging() {
 
   STAGING_SF_URL="https://$STAGING_INSTANCE_URL"
 
-  install_package_version \
-    "$SFDX_PACKAGE_NAME" \
-    "$DEV_HUB_SESSION_ID" \
-    "$STAGING_SESSION_ID" \
-    "$STAGING_SF_URL"
+  # install_package_version \
+  #   "$SFDX_PACKAGE_NAME" \
+  #   "$DEV_HUB_SESSION_ID" \
+  #   "$STAGING_SESSION_ID" \
+  #   "$STAGING_SF_URL"
 
 }
 
