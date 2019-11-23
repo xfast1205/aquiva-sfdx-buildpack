@@ -206,7 +206,7 @@ fi
 if [ "$STAGE" == "DEV" ]; then
   header "Develop App deploy ..."
 
-  # deploy_to_scratch
+  deploy_to_scratch
 
   install_package_dev
 
