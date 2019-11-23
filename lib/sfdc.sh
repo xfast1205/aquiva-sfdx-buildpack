@@ -114,6 +114,9 @@ validate_package() {
   if [ ! -z "$PACKAGE_IN_PROJECT_FILE" ]; then
     echo "5231313213"
   fi
+  if [ "$PACKAGE_IN_PROJECT_FILE" == "" ]; then
+    echo "65231313213"
+  fi
 
   if [[ -z "$PACKAGE_ON_DEVHUB" || -z "$PACKAGE_IN_PROJECT_FILE" ]]; then
     echo "Please install your package in your Dev Hub and update sfdx-project.json file"
