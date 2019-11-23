@@ -106,11 +106,9 @@ validate_package() {
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
 
   echo "$PACKAGE_IN_PROJECT_FILE"
-  echo "$(-z $PACKAGE_IN_PROJECT_FILE)"
   echo "$PACKAGE_ON_DEVHUB"
-  echo "$(-z $PACKAGE_ON_DEVHUB)"
 
-  if [[ -z "$PACKAGE_ON_DEVHUB" || -z "$PACKAGE_IN_PROJECT_FILE" ]]; then
+  if [[ ! -z "$PACKAGE_ON_DEVHUB" || -z "$PACKAGE_IN_PROJECT_FILE" ]]; then
     echo "Please install your package in your Dev Hub and update sfdx-project.json file"
     exit 1
   fi
