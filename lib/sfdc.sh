@@ -98,8 +98,6 @@ is_namespace_exists_in_project_file() {
 prepare_sfdc_environment() {
   SF_URL="https://$1"
 
-  echo "$SF_URL"
-
   sfdx force:config:set \
     instanceUrl="$SF_URL"
 
@@ -111,7 +109,7 @@ validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
 
-  if [ "$PACKAGE_ON_DEVHUB" = "false" || "$PACKAGE_IN_PROJECT_FILE" = "false" ]; then
+  if [[ "$PACKAGE_ON_DEVHUB" = "false" || "$PACKAGE_IN_PROJECT_FILE" = "false" ]]; then
     echo "Please install your package in your Dev Hub and update sfdx-project.json file"
     exit 1
   fi

@@ -109,13 +109,11 @@ install_package_dev() {
     "$DEV_HUB_INSTANCE_URL" \
     "$DEV_HUB_SESSION_ID"
 
-  DEV_SF_URL="https://$DEV_INSTANCE_URL"
-
   install_package_version \
     "$SFDX_PACKAGE_NAME" \
     "$DEV_HUB_SESSION_ID" \
     "$DEV_SESSION_ID" \
-    "$DEV_SF_URL"
+    "$DEV_INSTANCE_URL"
 
 }
 
@@ -208,7 +206,7 @@ fi
 if [ "$STAGE" == "DEV" ]; then
   header "Develop App deploy ..."
 
-  deploy_to_scratch
+  # deploy_to_scratch
 
   install_package_dev
 
