@@ -98,6 +98,8 @@ is_namespace_exists_in_project_file() {
 prepare_sfdc_environment() {
   SF_URL="https://$1"
 
+  echo "$SF_URL"
+
   sfdx force:config:set \
     instanceUrl="$SF_URL"
 
