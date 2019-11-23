@@ -108,6 +108,8 @@ prepare_sfdc_environment() {
 validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
+  echo "$PACKAGE_ON_DEVHUB"
+  echo "$PACKAGE_IN_PROJECT_FILE"
 
   if [[ "$PACKAGE_ON_DEVHUB" = "false" || "$PACKAGE_IN_PROJECT_FILE" = "false" ]]; then
     echo "Please install your package in your Dev Hub and update sfdx-project.json file"
