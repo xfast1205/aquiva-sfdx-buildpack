@@ -62,8 +62,9 @@ is_package_exists_on_devhub() {
     jq -r --arg PACKAGE_NAME "$2" '.result[]
       | select(.Name==$PACKAGE_NAME)')"
 
-  if [ ! -z "$IS_PACKAGE_EXISTS" ]; then
-    echo "true"
+  if [ -z "$IS_PACKAGE_EXISTS" ]; then
+    echo "Please install your package in your Dev Hub"
+    exit 1
   fi
 }
 
@@ -74,8 +75,9 @@ is_package_exists_in_project_file() {
     jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)')"
 
-  if [ ! -z "$IS_PACKAGE_EXISTS" ]; then
-    echo "true"
+  if [ -z "$IS_PACKAGE_EXISTS" ]; then
+    echo "Please update sfdx-project.json file with package name"
+    exit 1
   fi
 }
 
@@ -85,9 +87,8 @@ is_namespace_exists_in_project_file() {
       | select(.namespace==$NAMESPACE)')"
 
   if [ -z "$IS_NAMESPACE_EXISTS" ]; then
-    echo "false"
-  else
-    echo "true"
+    echo "Please link namespace to your Dev Hub and update sfdx-project.json file"
+    exit 1
   fi
 }
 
@@ -99,38 +100,6 @@ prepare_sfdc_environment() {
 
   sfdx force:config:set \
     defaultusername="$2"
-}
-
-validate_package() {
-  PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
-  PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
-
-  echo "$PACKAGE_IN_PROJECT_FILE"
-  echo "$PACKAGE_ON_DEVHUB"
-  
-  if [ -z "$PACKAGE_IN_PROJECT_FILE" ]; then
-    echo "231313213"
-  fi
-  if [ ! -z "$PACKAGE_IN_PROJECT_FILE" ]; then
-    echo "5231313213"
-  fi
-  if [ "$PACKAGE_IN_PROJECT_FILE" == "" ]; then
-    echo "65231313213"
-  fi
-
-  if [[ -z "$PACKAGE_ON_DEVHUB" || -z "$PACKAGE_IN_PROJECT_FILE" ]]; then
-    echo "Please install your package in your Dev Hub and update sfdx-project.json file"
-    exit 1
-  fi
-}
-
-validate_namespace() {
-  NAMESPACE_IN_PROJECT_FILE=$(is_namespace_exists_in_project_file "$1")
-
-  if [ "$NAMESPACE_IN_PROJECT_FILE" = "false" ]; then
-    echo "Please register namespace on your Dev Hub and update sfdx-project.json file"
-    exit 1
-  fi
 }
 
 prepare_proc() {
