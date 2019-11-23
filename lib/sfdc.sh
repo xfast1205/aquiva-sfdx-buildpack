@@ -69,19 +69,19 @@ is_package_exists_on_devhub() {
   fi
 }
 
-is_package_exists_in_project_file() {
-  log "Checking Package in project files ..."
+# is_package_exists_in_project_file() {
+#   log "Checking Package in project files ..."
 
-  IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
-    jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
-      | select(.package==$PACKAGE_NAME)')"
+#   IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
+#     jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
+#       | select(.package==$PACKAGE_NAME)')"
 
-  if [ -z "$IS_PACKAGE_EXISTS" ]; then
-    echo "false"
-  else
-    echo "true"
-  fi
-}
+#   if [ -z "$IS_PACKAGE_EXISTS" ]; then
+#     echo "false"
+#   else
+#     echo "true"
+#   fi
+# }
 
 is_namespace_exists_in_project_file() {
   IS_NAMESPACE_EXISTS="$(cat sfdx-project.json |
@@ -107,10 +107,10 @@ prepare_sfdc_environment() {
 
 validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
-  PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
+  # PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
 
-  if [[ "$PACKAGE_ON_DEVHUB" = "false" || "$PACKAGE_IN_PROJECT_FILE" = "false" ]]; then
-    echo "Please install your package in your Dev Hub and update sfdx-project.json file"
+  if [[ "$PACKAGE_ON_DEVHUB" = "false" ]]; then
+    echo "Please install your package in your Dev Hub"
     exit 1
   fi
 }
@@ -142,7 +142,7 @@ install_package_version() {
   PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
     jq -r '.result.SubscriberPackageVersionId')"
 
-  prepare_proc "$1" "$2" "$3" "$4"
+  # prepare_proc "$1" "$2" "$3" "$4"
 
   prepare_sfdc_environment "$4" "$3"
   sfdx force:package:install \
