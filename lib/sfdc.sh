@@ -109,7 +109,7 @@ validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
 
-  if [ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" ]; then
+  if [ "$PACKAGE_ON_DEVHUB" = "false" || "$PACKAGE_IN_PROJECT_FILE" = "false" ]; then
     echo "Please install your package in your Dev Hub and update sfdx-project.json file"
     exit 1
   fi
@@ -118,9 +118,19 @@ validate_package() {
 validate_namespace() {
   NAMESPACE_IN_PROJECT_FILE=$(is_namespace_exists_in_project_file "$1")
 
-  if [ "$NAMESPACE_IN_PROJECT_FILE" == "false" ]; then
+  if [ "$NAMESPACE_IN_PROJECT_FILE" = "false" ]; then
     echo "Please register namespace on your Dev Hub and update sfdx-project.json file"
     exit 1
+  fi
+}
+
+prepare_proc() {
+  if [ ! -f $BUILD_DIR/Procfile ]; then
+    log "Creating Procfile ..."
+
+    echo "# Deploy source to prodyuction org.
+  release: ./"$vendorDir"/release.sh \"$1\" \"$2\"" > $BUILD_DIR/Procfile
+
   fi
 }
 
@@ -129,8 +139,10 @@ install_package_version() {
 
   VERSION_NUMBER=$(get_package_version $1 $2)
 
-  export PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
-   jq -r '.result.SubscriberPackageVersionId')"
+  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
+    jq -r '.result.SubscriberPackageVersionId')"
+
+  prepare_proc "$1" "$2" "$3" "$4"
 
   prepare_sfdc_environment "$4" "$3"
   sfdx force:package:install \
@@ -154,7 +166,7 @@ get_package_version() {
   if [ -z $MAJOR_VERSION ]; then MAJOR_VERSION=1; fi;
   if [ -z $MINOR_VERSION ]; then MINOR_VERSION=0; fi;
   if [ -z $PATCH_VERSION ]; then PATCH_VERSION=0; fi;
-  if [ "$IS_RELEASED" == "true" ]; then MINOR_VERSION=$(($MINOR_VERSION+1)); fi;
+  if [ "$IS_RELEASED" = "true" ]; then MINOR_VERSION=$(($MINOR_VERSION+1)); fi;
   VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
 
   echo "$VERSION_NUMBER"
