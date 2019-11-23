@@ -108,13 +108,9 @@ prepare_sfdc_environment() {
 validate_package() {
   PACKAGE_ON_DEVHUB=$(is_package_exists_on_devhub $1 $2)
   PACKAGE_IN_PROJECT_FILE=$(is_package_exists_in_project_file "$2")
-  echo "$PACKAGE_ON_DEVHUB"
-  echo "$PACKAGE_IN_PROJECT_FILE == false"
-  if [ "$PACKAGE_IN_PROJECT_FILE" == false ]; then
-  echo "122333"
-  fi
-  if [ $PACKAGE_IN_PROJECT_FILE == "false" ]; then
-  echo "5122333"
+
+  if [ "$PACKAGE_ON_DEVHUB" == "true" ]; then
+  echo "23131"
   fi
 
   if [[ "$PACKAGE_ON_DEVHUB" == "false" || "$PACKAGE_IN_PROJECT_FILE" == "false" ]]; then
