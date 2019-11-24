@@ -180,7 +180,6 @@ install_package_version() {
 }
 
 get_package_version() {
-  log "Retrieving Package ID ..."
   SFDX_PACKAGE_NAME=${1:-}
   DEVHUB_USERNAME=${2:-}
 

@@ -71,7 +71,6 @@ make_soap_request() {
 }
 
 get_session_id() {
-  log "Retrieving session ID ..."
   RESPONSE=${1:-}
 
   echo "$RESPONSE" > "resp.xml"
@@ -80,7 +79,6 @@ get_session_id() {
 }
 
 get_instance_url() {
-  log "Retrieving Instance URL ..."
   RESPONSE=${1:-}
 
   echo "$RESPONSE" > "resp.xml"
