@@ -103,19 +103,16 @@ prepare_sfdc_environment() {
 }
 
 prepare_proc() {
-  if [ ! -f $BUILD_DIR/Procfile ]; then
+  if [ ! -f $5/Procfile ]; then
     log "Creating Procfile ..."
 
     echo "# Deploy source to prodyuction org.
     release: ./release/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
 
-    cd $6
-    pwd
-    ls -la
-    cp /lib/release.sh $5/lib/
-    cp /lib/deps.sh $5/lib/
-    cp /lib/sfdc.sh $5/lib/
-    cp /lib/lib.sh $5/lib/
+    cp $6/release.sh $5/lib/
+    cp $6/deps.sh $5/lib/
+    cp $6/sfdc.sh $5/lib/
+    cp $6/lib.sh $5/lib/
 
   fi
 }
