@@ -122,10 +122,11 @@ install_package_version() {
 
   VERSION_NUMBER=$(get_package_version $1 $2)
 
-  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
-    jq -r '.result.SubscriberPackageVersionId')"
+  # PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
+  #   jq -r '.result.SubscriberPackageVersionId')"
 
-  prepare_proc "$1" "$2" "$3" "$4" "$5"
+  prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5"
+  # prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5"
 
   prepare_sfdc_environment "$4" "$3"
   sfdx force:package:install \
