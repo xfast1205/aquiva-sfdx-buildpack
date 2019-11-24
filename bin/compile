@@ -117,7 +117,8 @@ install_package() {
     "$DEV_SESSION_ID" \
     "$DEV_INSTANCE_URL" \
     "$BUILD_DIR" \
-    "$BP_DIR"
+    "$BP_DIR" \
+    "$DEV_HUB_INSTANCE_URL"
 
 }
 

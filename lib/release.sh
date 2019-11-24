@@ -11,6 +11,7 @@ SFDX_PACKAGE_VERSION_ID=${2:-}
 ORG_USERNAME=${3:-}
 INSTANCE_URL=${4:-}
 DEVHUB_USERNAME=${5:-}
+DEVHUB_INSTANCE_URL=${6:-}
 BP_DIR="."
 # DEV_HUB_INSTANCE_URL=${6:-}
 
@@ -24,6 +25,10 @@ header "Running release.sh ..."
 
 promote_package() {
   log "Promote package ..."
+
+  prepare_sfdc_environment \
+    "$DEVHUB_INSTANCE_URL" \
+    "$DEVHUB_USERNAME"
 
   sfdx force:package:version:promote \
     -p "$SFDX_PACKAGE_VERSION_ID" \
