@@ -107,7 +107,7 @@ prepare_proc() {
     log "Creating Procfile ..."
 
     echo "# Deploy source to prodyuction org.
-    release: ./release/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
+    release: ./release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
 
     mkdir $5/lib/
     cp $6/lib/release.sh $5/
