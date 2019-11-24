@@ -106,7 +106,7 @@ prepare_proc() {
   if [ ! -f $5/Procfile ]; then
     log "Creating Procfile ..."
 
-    echo "release: bash ./lib/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
+    echo "release: bash ./lib/release.sh \"$1\" \"$2\" \"$3\" \"$4\"" > $5/Procfile
 
     mkdir $5/lib/
     cp $6/lib/release.sh $5/lib/
@@ -122,18 +122,18 @@ install_package_version() {
 
   VERSION_NUMBER=$(get_package_version $1 $2)
 
-  # PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
-  #   jq -r '.result.SubscriberPackageVersionId')"
+  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
+    jq -r '.result.SubscriberPackageVersionId')"
 
   prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5" "$6"
 
   prepare_sfdc_environment "$4" "$3"
-  # sfdx force:package:install \
-  #   --package $PACKAGE_VERSION_ID \
-  #   --wait 100 \
-  #   --publishwait 100 \
-  #   --noprompt \
-  #   -u $3
+  sfdx force:package:install \
+    --package $PACKAGE_VERSION_ID \
+    --wait 100 \
+    --publishwait 100 \
+    --noprompt \
+    -u $3
 }
 
 get_package_version() {

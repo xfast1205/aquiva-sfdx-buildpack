@@ -10,7 +10,6 @@ DEV_HUB_SESSION_ID=${1:-}
 SFDX_PACKAGE_VERSION_ID=${2:-}
 STAGING_SF_URL=${3:-}
 STAGING_SESSION_ID=${4:-}
-BUILD_DIR=${5:-}
 BP_DIR="."
 # DEV_HUB_INSTANCE_URL=${6:-}
 
@@ -25,28 +24,25 @@ header "Running release.sh ..."
 promote_package() {
   log "Promote package ..."
 
-  # sfdx force:package:version:promote \
-  #   -p $1 \
-  #   -v $2 \
-  #   -n
+  sfdx force:package:version:promote \
+    -p "$SFDX_PACKAGE_VERSION_ID" \
+    -v "$DEV_HUB_SESSION_ID" \
+    -n
 
-  # prepare_sfdc_environment \
-  #   "$STAGING_SF_URL" \
-  #   "$STAGING_SESSION_ID"
+  prepare_sfdc_environment \
+    "$STAGING_SF_URL" \
+    "$STAGING_SESSION_ID"
 
-  # sfdx force:package:install \
-  # -p $1 \
-  # -u $3 \
-  # -w 10 \
-  # --publishwait 10 \
-  # -n
+  sfdx force:package:install \
+  -p "$SFDX_PACKAGE_VERSION_ID" \
+  -u "$STAGING_SESSION_ID" \
+  -w 10 \
+  -b 10 \
+  -n
 
 }
 
-promote_package \
-  "$SFDX_PACKAGE_VERSION_ID" \
-  "$DEV_HUB_SESSION_ID" \
-  "$STAGING_SESSION_ID"
+promote_package
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0
