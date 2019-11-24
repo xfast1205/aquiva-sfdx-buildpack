@@ -11,6 +11,7 @@ SFDX_PACKAGE_VERSION_ID=${2:-}
 STAGING_SF_URL=${3:-}
 STAGING_SESSION_ID=${4:-}
 BUILD_DIR=${5:-}
+BP_DIR="."
 # DEV_HUB_INSTANCE_URL=${6:-}
 
 # Import dependencies
