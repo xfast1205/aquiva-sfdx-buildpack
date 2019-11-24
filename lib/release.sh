@@ -25,8 +25,6 @@ header "Running release.sh ..."
 promote_package() {
   log "Promote package ..."
 
-  sfdx force:org:list
-
   # sfdx force:package:version:promote \
   #   -p $1 \
   #   -v $2 \
