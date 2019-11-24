@@ -109,10 +109,10 @@ prepare_proc() {
     echo "# Deploy source to prodyuction org.
     release: ./release/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
 
-    cp $6/release.sh $5/lib/
-    cp $6/deps.sh $5/lib/
-    cp $6/sfdc.sh $5/lib/
-    cp $6/lib.sh $5/lib/
+    cp $6/lib/release.sh $5/lib/
+    cp $6/lib/deps.sh $5/lib/
+    cp $6/lib/sfdc.sh $5/lib/
+    cp $6/lib/lib.sh $5/lib/
 
   fi
 }
@@ -125,7 +125,7 @@ install_package_version() {
   # PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
   #   jq -r '.result.SubscriberPackageVersionId')"
 
-  prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5"
+  prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5" "$6"
   # prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5"
 
   prepare_sfdc_environment "$4" "$3"
