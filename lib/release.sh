@@ -12,12 +12,12 @@ STAGING_SF_URL=${3:-}
 STAGING_SESSION_ID=${4:-}
 BUILD_DIR=${5:-}
 # DEV_HUB_INSTANCE_URL=${6:-}
-ls -la
+
 # Import dependencies
 
-source $BUILD_DIR/lib/lib.sh
-source $BUILD_DIR/lib/deps.sh
-source $BUILD_DIR/lib/sfdc.sh
+source ./lib/lib.sh
+source ./lib/deps.sh
+source ./lib/sfdc.sh
 
 header "Running release.sh ..."
 
