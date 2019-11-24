@@ -25,21 +25,23 @@ header "Running release.sh ..."
 promote_package() {
   log "Promote package ..."
 
-  sfdx force:package:version:promote \
-    -p $1 \
-    -v $2 \
-    -n
+  sfdx force:org:list
 
-  prepare_sfdc_environment \
-    "$STAGING_SF_URL" \
-    "$STAGING_SESSION_ID"
+  # sfdx force:package:version:promote \
+  #   -p $1 \
+  #   -v $2 \
+  #   -n
 
-  sfdx force:package:install \
-  -p $1 \
-  -u $3 \
-  -w 10 \
-  --publishwait 10 \
-  -n
+  # prepare_sfdc_environment \
+  #   "$STAGING_SF_URL" \
+  #   "$STAGING_SESSION_ID"
+
+  # sfdx force:package:install \
+  # -p $1 \
+  # -u $3 \
+  # -w 10 \
+  # --publishwait 10 \
+  # -n
 
 }
 
