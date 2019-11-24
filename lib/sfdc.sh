@@ -156,8 +156,13 @@ install_package_version() {
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
-  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $SFDX_PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $USERNAME --wait 100 --json |
-    jq -r '.result.SubscriberPackageVersionId')"
+  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create \
+    -p $SFDX_PACKAGE_NAME \
+    -n $VERSION_NUMBER \
+    -v $DEVHUB_USERNAME \
+    -w 100 \
+    --json \
+    -x | jq -r '.result.SubscriberPackageVersionId')"
 
   prepare_proc \
     "$SFDX_PACKAGE_NAME" \
