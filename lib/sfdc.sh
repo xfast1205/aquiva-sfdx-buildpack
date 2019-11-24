@@ -5,61 +5,72 @@ source $BP_DIR/lib/lib.sh
 
 sfdx_create_scratch() {
   log "Creating scratch org ..."
+  USERNAME=${1:-}
+  ALIAS=${2:-}
 
   sfdx force:org:create \
-    -v $1 \
-    -f ./config/project-scratch-def.json \
-    -a $2
+    -v "$USERNAME" \
+    -a "$ALIAS" \
+    -f ./config/project-scratch-def.json
 }
 
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
+  USERNAME=${1:-}
 
   sfdx force:source:push \
-    -u $1
+    -u "$USERNAME"
 }
 
 sfdx_run_test() {
   log "Running org tests ..."
+  USERNAME=${1:-}
 
   sfdx force:apex:test:run \
-    -u $1 \
-    -r human \
-    -y \
-    -w 1000 \
+    -l RunLocalTests \
+    -u "$USERNAME" \
     --verbose \
-    -l RunLocalTests
+    -r human \
+    -w 1000 \
+    -y
 }
 
 sfdx_delete_scratch() {
   log "Removing scratch org ..."
+  ALIAS=${1:-}
+  USERNAME=${2:-}
 
   sfdx force:org:delete \
-    -u $1 \
-    -v $2 \
+    -v "$USERNAME" \
+    -u "$ALIAS" \
     -p
 }
 
 create_package() {
   log "Creating Package ..."
+  PACKAGE_NAME=${1:-}
+  PACKAGE_TYPE=${2:-}
+  USERNAME=${3:-}
 
   PACKAGE_PATH="$(cat sfdx-project.json |
-    jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
+    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)
       | .path')"
 
   sfdx force:package:create \
-    --path "$PACKAGE_PATH" \
-    --name $1 \
-    --packagetype $2 \
-    -v $3
+    -d "$PACKAGE_PATH" \
+    -p "$PACKAGE_NAME" \
+    -t "$PACKAGE_TYPE" \
+    -v "$USERNAME"
 }
 
 is_package_exists_on_devhub() {
   log "Checking Package on Dev Hub ..."
+  USERNAME=${1:-}
+  PACKAGE_NAME=${2:-}
 
-  IS_PACKAGE_EXISTS="$(eval sfdx force:package:list -v $1 --json |
-    jq -r --arg PACKAGE_NAME "$2" '.result[]
+  IS_PACKAGE_EXISTS="$(eval sfdx force:package:list -v $USERNAME --json |
+    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.result[]
       | select(.Name==$PACKAGE_NAME)')"
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
@@ -70,9 +81,10 @@ is_package_exists_on_devhub() {
 
 is_package_exists_in_project_file() {
   log "Checking Package in project files ..."
+  PACKAGE_NAME=${1:-}
 
   IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
-    jq -r --arg PACKAGE_NAME "$1" '.packageDirectories[]
+    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)')"
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
@@ -82,8 +94,11 @@ is_package_exists_in_project_file() {
 }
 
 is_namespace_exists_in_project_file() {
+  log "Checking Namespace in project files ..."
+  NAMESPACE=${1:-}
+
   IS_NAMESPACE_EXISTS="$(cat sfdx-project.json |
-    jq -r --arg NAMESPACE "$1" '.packageDirectories[]
+    jq -r --arg NAMESPACE "$NAMESPACE" '.packageDirectories[]
       | select(.namespace==$NAMESPACE)')"
 
   if [ -z "$IS_NAMESPACE_EXISTS" ]; then
@@ -93,51 +108,83 @@ is_namespace_exists_in_project_file() {
 }
 
 prepare_sfdc_environment() {
-  SF_URL="https://$1"
+  log "Prepare Environment configs ..."
+  INSTANCE_URL=${1:-}
+  USERNAME=${2:-}
+  SF_URL="https://$INSTANCE_URL"
 
   sfdx force:config:set \
     instanceUrl="$SF_URL"
 
   sfdx force:config:set \
-    defaultusername="$2"
+    defaultusername="$USERNAME"
 }
 
 prepare_proc() {
   if [ ! -f $5/Procfile ]; then
     log "Creating Procfile ..."
+    SFDX_PACKAGE_NAME=${1:-}
+    PACKAGE_VERSION_ID=${2:-}
+    DEV_SESSION_ID=${3:-}
+    DEV_INSTANCE_URL=${4:-}
+    BUILD_DIR=${5:-}
+    BP_DIR=${6:-}
 
-    echo "release: bash ./lib/release.sh \"$1\" \"$2\" \"$3\" \"$4\"" > $5/Procfile
+    echo "release: bash ./lib/release.sh \
+      \"$SFDX_PACKAGE_NAME\" \
+      \"$PACKAGE_VERSION_ID\" \
+      \"$DEV_SESSION_ID\" \
+      \"$DEV_INSTANCE_URL\"" > $5/Procfile
 
-    mkdir $5/lib/
-    cp $6/lib/release.sh $5/lib/
-    cp $6/lib/deps.sh $5/lib/
-    cp $6/lib/sfdc.sh $5/lib/
-    cp $6/lib/lib.sh $5/lib/
+    mkdir $BUILD_DIR/lib/
+    cp $BP_DIR/lib/release.sh $BUILD_DIR/lib/
+    cp $BP_DIR/lib/deps.sh $BUILD_DIR/lib/
+    cp $BP_DIR/lib/sfdc.sh $BUILD_DIR/lib/
+    cp $BP_DIR/lib/lib.sh $BUILD_DIR/lib/
 
   fi
 }
 
 install_package_version() {
   log "Installing new package version ..."
+  SFDX_PACKAGE_NAME=${1:-}
+  DEVHUB_USERNAME=${2:-}
+  USERNAME=${3:-}
+  INSTANCE_URL=${4:-}
+  BUILD_DIR=${5:-}
+  BP_DIR=${6:-}
 
-  VERSION_NUMBER=$(get_package_version $1 $2)
+  VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
-  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
+  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $SFDX_PACKAGE_NAME --versionnumber $VERSION_NUMBER --installationkeybypass -v $USERNAME --wait 100 --json |
     jq -r '.result.SubscriberPackageVersionId')"
 
-  prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5" "$6"
+  prepare_proc \
+    "$SFDX_PACKAGE_NAME" \
+    "$PACKAGE_VERSION_ID" \
+    "$USERNAME" \
+    "$INSTANCE_URL" \
+    "$BUILD_DIR" \
+    "$BP_DIR"
 
-  prepare_sfdc_environment "$4" "$3"
+  prepare_sfdc_environment \
+    "$INSTANCE_URL" \
+    "$USERNAME"
+
   sfdx force:package:install \
-    --package $PACKAGE_VERSION_ID \
-    --wait 100 \
-    --publishwait 100 \
-    --noprompt \
-    -u $3
+    -p "$PACKAGE_VERSION_ID" \
+    -u "$USERNAME" \
+    -w 100 \
+    -b 100 \
+    -r
 }
 
 get_package_version() {
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $2 -p $1 --json --concise |
+  log "Retrieving Package ID ..."
+  SFDX_PACKAGE_NAME=${1:-}
+  DEVHUB_USERNAME=${2:-}
+
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $DEVHUB_USERNAME -p $SFDX_PACKAGE_NAME --json --concise |
     jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
