@@ -109,6 +109,8 @@ prepare_proc() {
     echo "# Deploy source to prodyuction org.
     release: ./release/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
 
+    pwd
+    ls -la
     cp /lib/release.sh $5/lib/
     cp /lib/deps.sh $5/lib/
     cp /lib/sfdc.sh $5/lib/
