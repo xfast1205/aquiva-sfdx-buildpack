@@ -129,12 +129,14 @@ prepare_proc() {
     DEV_INSTANCE_URL=${4:-}
     BUILD_DIR=${5:-}
     BP_DIR=${6:-}
+    DEVHUB_USERNAME=${7:-}
 
     echo "release: bash ./lib/release.sh \
       \"$SFDX_PACKAGE_NAME\" \
       \"$PACKAGE_VERSION_ID\" \
       \"$DEV_SESSION_ID\" \
-      \"$DEV_INSTANCE_URL\"" > $5/Procfile
+      \"$DEV_INSTANCE_URL\" \
+      \"$DEVHUB_USERNAME\"" > $BUILD_DIR/Procfile
 
     mkdir $BUILD_DIR/lib/
     cp $BP_DIR/lib/release.sh $BUILD_DIR/lib/
@@ -170,7 +172,8 @@ install_package_version() {
     "$USERNAME" \
     "$INSTANCE_URL" \
     "$BUILD_DIR" \
-    "$BP_DIR"
+    "$BP_DIR" \
+    "$DEVHUB_USERNAME"
 
   prepare_sfdc_environment \
     "$INSTANCE_URL" \
@@ -188,7 +191,11 @@ get_package_version() {
   SFDX_PACKAGE_NAME=${1:-}
   DEVHUB_USERNAME=${2:-}
 
-  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list -v $DEVHUB_USERNAME -p $SFDX_PACKAGE_NAME --json --concise |
+  PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list \
+    -v $DEVHUB_USERNAME \
+    -p $SFDX_PACKAGE_NAME \
+    --concise \
+    --json |
     jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
 
   IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)

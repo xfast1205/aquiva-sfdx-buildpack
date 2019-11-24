@@ -6,10 +6,11 @@ START_TIME=$SECONDS
 set -o errexit      # always exit on error
 set -o pipefail     # don't ignore exit codes when piping output
 
-DEV_HUB_SESSION_ID=${1:-}
+SFDX_PACKAGE_NAME=${1:-}
 SFDX_PACKAGE_VERSION_ID=${2:-}
-STAGING_SF_URL=${3:-}
-STAGING_SESSION_ID=${4:-}
+ORG_USERNAME=${3:-}
+INSTANCE_URL=${4:-}
+DEVHUB_USERNAME=${5:-}
 BP_DIR="."
 # DEV_HUB_INSTANCE_URL=${6:-}
 
@@ -26,16 +27,16 @@ promote_package() {
 
   sfdx force:package:version:promote \
     -p "$SFDX_PACKAGE_VERSION_ID" \
-    -v "$DEV_HUB_SESSION_ID" \
+    -v "$DEVHUB_USERNAME" \
     -n
 
   prepare_sfdc_environment \
-    "$STAGING_SF_URL" \
-    "$STAGING_SESSION_ID"
+    "$INSTANCE_URL" \
+    "$ORG_USERNAME"
 
   sfdx force:package:install \
   -p "$SFDX_PACKAGE_VERSION_ID" \
-  -u "$STAGING_SESSION_ID" \
+  -u "$ORG_USERNAME" \
   -w 10 \
   -b 10 \
   -n
