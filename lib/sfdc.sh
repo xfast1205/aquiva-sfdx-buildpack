@@ -106,8 +106,7 @@ prepare_proc() {
   if [ ! -f $5/Procfile ]; then
     log "Creating Procfile ..."
 
-    echo "# Deploy source to prodyuction org.
-    release: chmod a+x ./lib/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
+    echo "release: bash ./lib/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
 
     mkdir $5/lib/
     cp $6/lib/release.sh $5/lib/
