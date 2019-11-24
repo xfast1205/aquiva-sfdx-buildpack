@@ -110,7 +110,7 @@ prepare_proc() {
     release: ./lib/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
 
     mkdir -m 777 $5/lib/
-    cp $6/lib/release.sh $5/lib/
+    cp -rp $6/lib/release.sh $5/lib/
     cp $6/lib/deps.sh $5/lib/
     cp $6/lib/sfdc.sh $5/lib/
     cp $6/lib/lib.sh $5/lib/
