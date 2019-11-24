@@ -127,15 +127,14 @@ install_package_version() {
   #   jq -r '.result.SubscriberPackageVersionId')"
 
   prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5" "$6"
-  # prepare_proc "$1" "$PACKAGE_VERSION_ID" "$3" "$4" "$5"
 
   prepare_sfdc_environment "$4" "$3"
-  sfdx force:package:install \
-    --package $PACKAGE_VERSION_ID \
-    --wait 100 \
-    --publishwait 100 \
-    --noprompt \
-    -u $3
+  # sfdx force:package:install \
+  #   --package $PACKAGE_VERSION_ID \
+  #   --wait 100 \
+  #   --publishwait 100 \
+  #   --noprompt \
+  #   -u $3
 }
 
 get_package_version() {
