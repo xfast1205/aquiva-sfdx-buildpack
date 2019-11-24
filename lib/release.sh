@@ -5,47 +5,47 @@ START_TIME=$SECONDS
 # set -x
 set -o errexit      # always exit on error
 set -o pipefail     # don't ignore exit codes when piping output
-unset GIT_DIR       # Avoid GIT_DIR leak from previous build steps
 
-DEV_HUB_USERNAME=${1:-}
+DEV_HUB_SESSION_ID=${1:-}
 SFDX_PACKAGE_VERSION_ID=${2:-}
 STAGING_SF_URL=${3:-}
 STAGING_SESSION_ID=${4:-}
-
-vendorDir="vendor/sfdx"
+BUILD_DIR=${5:-}
+# DEV_HUB_INSTANCE_URL=${6:-}
 
 # Import dependencies
 
-source $BP_DIR/lib/lib.sh
-source $BP_DIR/lib/deps.sh
-source $BP_DIR/lib/sfdc.sh
+source $BUILD_DIR/lib/lib.sh
+source $BUILD_DIR/lib/deps.sh
+source $BUILD_DIR/lib/sfdc.sh
 
-header "Running release.sh"
-
-# Prepare environment
-
-setup_dirs() {
-  export PATH="$BUILD_DIR/vendor/sfdx/cli/bin:$PATH"
-  export PATH="$BUILD_DIR/vendor/sfdx/jq:$PATH"
-}
-
-export_env_dir() {
-  if [ -d "$ENV_DIR" ]; then
-    for e in $(ls $ENV_DIR); do
-      export $e=$(cat $ENV_DIR/$e)
-      :
-    done
-  fi
-}
+header "Running release.sh ..."
 
 promote_package() {
   log "Promote package ..."
 
-  VERSION_NUMBER=$(get_package_version $1 $2)
+  sfdx force:package:version:promote \
+    -p $1 \
+    -v $2 \
+    -n
 
-  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
-    jq -r '.result.SubscriberPackageVersionId')"
+  prepare_sfdc_environment \
+    "$STAGING_SF_URL" \
+    "$STAGING_SESSION_ID"
+
+  sfdx force:package:install \
+  -p $1 \
+  -u $3 \
+  -w 10 \
+  --publishwait 10 \
+  -n
+
 }
+
+promote_package \
+  "$SFDX_PACKAGE_VERSION_ID" \
+  "$DEV_HUB_SESSION_ID" \
+  "$STAGING_SESSION_ID"
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0

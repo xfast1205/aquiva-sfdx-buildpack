@@ -107,7 +107,12 @@ prepare_proc() {
     log "Creating Procfile ..."
 
     echo "# Deploy source to prodyuction org.
-  release: ./"$vendorDir"/release.sh \"$1\" \"$2\"" > $BUILD_DIR/Procfile
+    release: ./release/release.sh \"$1\" \"$2\" \"$3\" \"$4\" \"$5\"" > $5/Procfile
+
+    cp /lib/release.sh $5/lib/
+    cp /lib/deps.sh $5/lib/
+    cp /lib/sfdc.sh $5/lib/
+    cp /lib/lib.sh $5/lib/
 
   fi
 }
@@ -120,7 +125,7 @@ install_package_version() {
   PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create -p $1 --versionnumber $VERSION_NUMBER --installationkeybypass -v $2 --wait 100 --json |
     jq -r '.result.SubscriberPackageVersionId')"
 
-  # prepare_proc "$1" "$2" "$3" "$4"
+  prepare_proc "$1" "$2" "$3" "$4" "$5"
 
   prepare_sfdc_environment "$4" "$3"
   sfdx force:package:install \
