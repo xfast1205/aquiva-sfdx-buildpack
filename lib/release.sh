@@ -14,6 +14,11 @@ BUILD_DIR=${5:-}
 # DEV_HUB_INSTANCE_URL=${6:-}
 
 # Import dependencies
+cd lib
+ls -la
+echo "-------"
+cd $BUILD_DIR
+ls -la
 
 source ./lib/lib.sh
 source ./lib/deps.sh
