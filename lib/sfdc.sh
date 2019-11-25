@@ -201,8 +201,8 @@ install_package_version() {
   log "Installing new package version ..."
   SFDX_PACKAGE_NAME=${1:-}
   DEVHUB_USERNAME=${2:-}
-  USERNAME=${3:-}
-  INSTANCE_URL=${4:-}
+  TARGET_USERNAME=${3:-}
+  TARGET_INSTANCE_URL=${4:-}
   BUILD_DIR=${5:-}
   BP_DIR=${6:-}
   DEV_HUB_INSTANCE_URL=${7:-}
@@ -233,12 +233,12 @@ install_package_version() {
     -n
 
   prepare_sfdc_environment \
-    "$INSTANCE_URL" \
-    "$USERNAME"
+    "$TARGET_INSTANCE_URL" \
+    "$TARGET_USERNAME"
 
   sfdx force:package:install \
     -p "$PACKAGE_VERSION_ID" \
-    -u "$USERNAME" \
+    -u "$TARGET_USERNAME" \
     -w 100 \
     -b 100 \
     -r
