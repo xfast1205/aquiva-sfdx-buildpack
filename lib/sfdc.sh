@@ -64,7 +64,7 @@ create_package() {
     -v "$USERNAME"
 }
 
-is_package_exists_on_devhub() {
+check_package_on_devhub() {
   log "Checking Package on Dev Hub ..."
   USERNAME=${1:-}
   PACKAGE_NAME=${2:-}
@@ -72,24 +72,66 @@ is_package_exists_on_devhub() {
   IS_PACKAGE_EXISTS="$(eval sfdx force:package:list -v $USERNAME --json |
     jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.result[]
       | select(.Name==$PACKAGE_NAME)')"
+  
+  if [ "$STAGE" == "DEV" ]; then
+    PACKAGE_TYPE="Unlocked"
+  else
+    PACKAGE_TYPE="Managed"
+  fi
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
-    echo "Please install your package in your Dev Hub"
-    exit 1
+    echo "Installing package on Dev Hub ..."
+    create_package \
+      "$PACKAGE_NAME" \
+      "$PACKAGE_TYPE" \
+      "$USERNAME"
   fi
+
+  check_package_in_project_file \
+    "$PACKAGE_NAME" \
+    "$PACKAGE_TYPE" \
+    "$USERNAME"
 }
 
-is_package_exists_in_project_file() {
+check_package_in_project_file() {
   log "Checking Package in project files ..."
   PACKAGE_NAME=${1:-}
+  PACKAGE_TYPE=${2:-}
+  USERNAME=${3:-}
 
   IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
     jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)')"
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
-    echo "Please update sfdx-project.json file with package name"
-    exit 1
+    PACKAGE_ID="$(sfdx force:package:list -v "$USERNAME" --json |
+      jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" --arg PACKAGE_TYPE "$PACKAGE_TYPE" '.result[]
+        | select(.Name==$PACKAGE_NAME)
+        | select(.ContainerOptions==$PACKAGE_TYPE)
+        .Id')"
+    PATH="$(cat sfdx-project.json |
+      jq -r  '.packageDirectories[]
+        | select(.default==true)
+        .path')"
+    SFDX_PROJECT_TEMPLATE="{ \
+      \"packageDirectories\": [ \
+          { \
+              \"path\": \"$PATH\", \
+              \"default\": true, \
+              \"package\": \"$PACKAGE_NAME\", \
+              \"versionName\": \"ver 0.1\", \
+              \"versionNumber\": \"0.1.0.NEXT\" \
+          } \
+      ], \
+      \"namespace\": \"\", \
+      \"sfdcLoginUrl\": \"https://login.salesforce.com\", \
+      \"sourceApiVersion\": \"47.0\", \
+      \"packageAliases\": { \
+          \"$PACKAGE_NAME\": \"$PACKAGE_ID\" \
+      } \
+    }"
+
+    echo "$SFDX_PROJECT_TEMPLATE" > "./sfdx-project.json"
   fi
 }
 
@@ -169,15 +211,20 @@ install_package_version() {
     --json \
     -x | jq -r '.result.SubscriberPackageVersionId')"
 
-  prepare_proc \
-    "$SFDX_PACKAGE_NAME" \
-    "$PACKAGE_VERSION_ID" \
-    "$USERNAME" \
-    "$INSTANCE_URL" \
-    "$BUILD_DIR" \
-    "$BP_DIR" \
-    "$DEVHUB_USERNAME" \
-    "$DEV_HUB_INSTANCE_URL"
+  # prepare_proc \
+  #   "$SFDX_PACKAGE_NAME" \
+  #   "$PACKAGE_VERSION_ID" \
+  #   "$USERNAME" \
+  #   "$INSTANCE_URL" \
+  #   "$BUILD_DIR" \
+  #   "$BP_DIR" \
+  #   "$DEVHUB_USERNAME" \
+  #   "$DEV_HUB_INSTANCE_URL"
+
+  sfdx force:package:version:promote \
+    -p "$PACKAGE_VERSION_ID" \
+    -v "$DEVHUB_USERNAME" \
+    -n
 
   prepare_sfdc_environment \
     "$INSTANCE_URL" \

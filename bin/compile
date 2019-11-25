@@ -59,10 +59,14 @@ deploy_to_scratch() {
     "$DEV_HUB_INSTANCE_URL" \
     "$DEV_HUB_SESSION_ID"
 
-  is_package_exists_on_devhub \
+  # is_package_exists_on_devhub \
+  #   "$DEV_HUB_SESSION_ID" \
+  #   "$SFDX_PACKAGE_NAME"
+  # is_package_exists_in_project_file \
+  #   "$SFDX_PACKAGE_NAME"
+
+  check_package_on_devhub \
     "$DEV_HUB_SESSION_ID" \
-    "$SFDX_PACKAGE_NAME"
-  is_package_exists_in_project_file \
     "$SFDX_PACKAGE_NAME"
 
   sfdx_create_scratch \
@@ -179,8 +183,8 @@ fi
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
-  is_namespace_exists_in_project_file \
-    "$PACKAGE_NAMESPACE"
+  # is_namespace_exists_in_project_file \
+  #   "$PACKAGE_NAMESPACE"
 
   deploy_to_scratch
 
