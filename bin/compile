@@ -125,6 +125,9 @@ install_package() {
   INSTANCE_URL=$(get_instance_url \
     "$RESPONSE")
 
+  echo "$INSTANCE_URL"
+  exit 1
+
   prepare_sfdc_environment \
     "$DEV_HUB_INSTANCE_URL" \
     "$DEV_HUB_SESSION_ID"
@@ -186,7 +189,7 @@ fi
 if [ "$STAGE" == "DEV" ]; then
   header "Develop App deploy ..."
 
-  deploy_to_scratch
+  # deploy_to_scratch
 
   install_package
 
