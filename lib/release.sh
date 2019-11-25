@@ -44,7 +44,7 @@ promote_package() {
   -u "$ORG_USERNAME" \
   -w 10 \
   -b 10 \
-  -n
+  -r
 
 }
 
