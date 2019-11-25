@@ -179,10 +179,10 @@ fi
 if [ "$STAGE" == "STAGING" ]; then
   header "Staging App deploy ..."
 
-  is_namespace_exists_in_project_file \
-    "$PACKAGE_NAMESPACE"
+  # is_namespace_exists_in_project_file \
+  #   "$PACKAGE_NAMESPACE"
 
-  deploy_to_scratch
+  # deploy_to_scratch
 
   install_package
 
