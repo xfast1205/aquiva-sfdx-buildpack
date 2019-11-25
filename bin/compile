@@ -87,6 +87,18 @@ deploy_to_scratch() {
 
 install_package() {
 
+  if [ "$STAGE" == "DEV" ]; then
+    USERNAME="$DEV_USERNAME"
+    PASSWORD="$DEV_PASSWORD"
+    TOKEN="$DEV_TOKEN"
+    IS_SANDBOX="$DEV_IS_SANDBOX"
+  else
+    USERNAME="$STAGING_USERNAME"
+    PASSWORD="$STAGING_PASSWORD"
+    TOKEN="$STAGING_TOKEN"
+    IS_SANDBOX="$STAGING_IS_SANDBOX"
+  fi
+
   RESPONSE_DEV_HUB=$(make_soap_request \
     "$DEV_HUB_USERNAME" \
     "$DEV_HUB_PASSWORD" \
@@ -99,17 +111,17 @@ install_package() {
   DEV_HUB_INSTANCE_URL=$(get_instance_url \
     "$RESPONSE_DEV_HUB")
 
-  RESPONSE_DEV=$(make_soap_request \
-    "$DEV_USERNAME" \
-    "$DEV_PASSWORD" \
-    "$DEV_TOKEN" \
-    "$DEV_IS_SANDBOX")
+  RESPONSE=$(make_soap_request \
+    "$USERNAME" \
+    "$PASSWORD" \
+    "$TOKEN" \
+    "$IS_SANDBOX")
 
-  DEV_SESSION_ID=$(get_session_id \
-    "$RESPONSE_DEV")
+  SESSION_ID=$(get_session_id \
+    "$RESPONSE")
 
-  DEV_INSTANCE_URL=$(get_instance_url \
-    "$RESPONSE_DEV")
+  INSTANCE_URL=$(get_instance_url \
+    "$RESPONSE")
 
   prepare_sfdc_environment \
     "$DEV_HUB_INSTANCE_URL" \
@@ -118,8 +130,8 @@ install_package() {
   install_package_version \
     "$SFDX_PACKAGE_NAME" \
     "$DEV_HUB_SESSION_ID" \
-    "$DEV_SESSION_ID" \
-    "$DEV_INSTANCE_URL" \
+    "$SESSION_ID" \
+    "$INSTANCE_URL" \
     "$BUILD_DIR" \
     "$BP_DIR" \
     "$DEV_HUB_INSTANCE_URL"

@@ -234,9 +234,6 @@ install_package_version() {
     -v "$DEVHUB_USERNAME" \
     -n
 
-  echo "INST:$INSTANCE_URL"
-  echo "NAME:$USERNAME"
-
   prepare_sfdc_environment \
     "$INSTANCE_URL" \
     "$USERNAME"
