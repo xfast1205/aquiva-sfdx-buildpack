@@ -7,7 +7,7 @@ set -o errexit      # always exit on error
 set -o pipefail     # don't ignore exit codes when piping output
 
 SFDX_PACKAGE_NAME=${1:-}
-SFDX_PACKAGE_VERSION_ID=${2:-}
+TARGET_PACKAGE_VERSION_ID=${2:-}
 TARGET_ORG_USERNAME=${3:-}
 TARGET_ORG_INSTANCE_URL=${4:-}
 DEVHUB_USERNAME=${5:-}
@@ -30,7 +30,7 @@ promote_package() {
     "$DEVHUB_USERNAME"
 
   sfdx force:package:version:promote \
-    -p "$SFDX_PACKAGE_VERSION_ID" \
+    -p "$TARGET_PACKAGE_VERSION_ID" \
     -v "$DEVHUB_USERNAME" \
     -n
 
@@ -39,7 +39,7 @@ promote_package() {
     "$TARGET_ORG_USERNAME"
 
   sfdx force:package:install \
-    -p "$SFDX_PACKAGE_VERSION_ID" \
+    -p "$TARGET_PACKAGE_VERSION_ID" \
     -u "$TARGET_ORG_USERNAME" \
     -w 10 \
     -b 10 \
