@@ -59,6 +59,8 @@ deploy_to_scratch() {
     "$DEV_HUB_INSTANCE_URL" \
     "$DEV_HUB_SESSION_ID"
 
+  remove_temp_files
+
   # is_package_exists_on_devhub \
   #   "$DEV_HUB_SESSION_ID" \
   #   "$SFDX_PACKAGE_NAME"

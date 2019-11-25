@@ -87,3 +87,8 @@ get_instance_url() {
   read -ra ADDR <<< "$(sed -n '/serverUrl/{s/.*<serverUrl>//;s/<\/serverUrl.*//;p;}' resp.xml)"
   echo "${ADDR[2]}"
 }
+
+remove_temp_files() {
+  rm -rf ./login.txt
+  rm -rf ./resp.xml
+}
