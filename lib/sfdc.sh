@@ -113,8 +113,7 @@ check_package_in_project_file() {
       jq -r '.packageDirectories[]
         | select(.default==true)
         .path')"
-    NAMESPACE="$(cat sfdx-project.json |
-      jq -r '.namespace')"
+    NAMESPACE="$PACKAGE_NAMESPACE"
     API_VERSION="$(cat sfdx-project.json |
       jq -r '.sourceApiVersion')"
     LOGIN_URL="$(cat sfdx-project.json |
