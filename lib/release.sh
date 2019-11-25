@@ -14,12 +14,6 @@ DEVHUB_USERNAME=${5:-}
 DEVHUB_INSTANCE_URL=${6:-}
 BP_DIR="."
 
-echo $SFDX_PACKAGE_NAME
-  echo $SFDX_PACKAGE_VERSION_ID
-  echo $ORG_USERNAME
-  echo $INSTANCE_URL
-  echo $DEVHUB_USERNAME
-  echo $DEVHUB_INSTANCE_URL
 # Import dependencies
 
 source lib/lib.sh
@@ -39,7 +33,7 @@ promote_package() {
     -p "$SFDX_PACKAGE_VERSION_ID" \
     -v "$DEVHUB_USERNAME" \
     -n
-
+  echo "$INSTANCE_URL"
   prepare_sfdc_environment \
     "$INSTANCE_URL" \
     "$ORG_USERNAME"
