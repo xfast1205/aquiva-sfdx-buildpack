@@ -98,6 +98,7 @@ check_package_in_project_file() {
   PACKAGE_NAME=${1:-}
   PACKAGE_TYPE=${2:-}
   USERNAME=${3:-}
+  NAMESPACE="$PACKAGE_NAMESPACE"
 
   IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
     jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
@@ -113,7 +114,6 @@ check_package_in_project_file() {
       jq -r '.packageDirectories[]
         | select(.default==true)
         .path')"
-    NAMESPACE="$PACKAGE_NAMESPACE"
     API_VERSION="$(cat sfdx-project.json |
       jq -r '.sourceApiVersion')"
     LOGIN_URL="$(cat sfdx-project.json |
