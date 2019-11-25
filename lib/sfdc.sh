@@ -207,6 +207,9 @@ install_package_version() {
   BP_DIR=${6:-}
   DEV_HUB_INSTANCE_URL=${7:-}
 
+  echo "$TARGET_INSTANCE_URL"
+  exit 1
+
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
   PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create \
