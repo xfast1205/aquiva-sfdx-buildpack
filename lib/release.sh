@@ -14,7 +14,9 @@ DEVHUB_USERNAME=${5:-}
 DEVHUB_INSTANCE_URL=${6:-}
 BP_DIR="."
 
+echo "start"
 echo "$STAGE"
+echo "end"
 
 # Import dependencies
 
