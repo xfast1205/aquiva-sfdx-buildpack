@@ -16,12 +16,15 @@ BP_DIR="."
 
 # Import dependencies
 
+echo "1$TARGET_ORG_INSTANCE_URL"
+
 source lib/lib.sh
 source lib/deps.sh
 source lib/sfdc.sh
 
 header "Running release.sh ..."
 
+echo "2$TARGET_ORG_INSTANCE_URL"
 promote_package() {
   log "Promote package ..."
 
@@ -34,6 +37,7 @@ promote_package() {
     -v "$DEVHUB_USERNAME" \
     -n
 
+  echo "3$TARGET_ORG_INSTANCE_URL"
   prepare_sfdc_environment \
     "$TARGET_ORG_INSTANCE_URL" \
     "$TARGET_ORG_USERNAME"
