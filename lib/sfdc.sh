@@ -113,8 +113,6 @@ prepare_sfdc_environment() {
   USERNAME=${2:-}
   SF_URL="https://$INSTANCE_URL"
 
-  echo "$SF_URL"
-
   sfdx force:config:set \
     instanceUrl="$SF_URL"
 
