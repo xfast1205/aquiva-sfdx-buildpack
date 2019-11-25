@@ -13,8 +13,13 @@ INSTANCE_URL=${4:-}
 DEVHUB_USERNAME=${5:-}
 DEVHUB_INSTANCE_URL=${6:-}
 BP_DIR="."
-# DEV_HUB_INSTANCE_URL=${6:-}
 
+echo $SFDX_PACKAGE_NAME
+  echo $SFDX_PACKAGE_VERSION_ID
+  echo $ORG_USERNAME
+  echo $INSTANCE_URL
+  echo $DEVHUB_USERNAME
+  echo $DEVHUB_INSTANCE_URL
 # Import dependencies
 
 source lib/lib.sh

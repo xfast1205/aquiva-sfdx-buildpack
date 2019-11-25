@@ -158,6 +158,13 @@ install_package_version() {
   BUILD_DIR=${5:-}
   BP_DIR=${6:-}
   DEV_HUB_INSTANCE_URL=${7:-}
+  echo $SFDX_PACKAGE_NAME
+  echo $DEVHUB_USERNAME
+  echo $USERNAME
+  echo $INSTANCE_URL
+  echo $BUILD_DIR
+  echo $BP_DIR
+  echo $DEV_HUB_INSTANCE_URL
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
