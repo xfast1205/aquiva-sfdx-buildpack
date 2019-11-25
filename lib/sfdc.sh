@@ -58,8 +58,8 @@ create_package() {
       | .path')"
 
   sfdx force:package:create \
-    -d "$PACKAGE_PATH" \
-    -p "$PACKAGE_NAME" \
+    -r "$PACKAGE_PATH" \
+    -n "$PACKAGE_NAME" \
     -t "$PACKAGE_TYPE" \
     -v "$USERNAME"
 }
