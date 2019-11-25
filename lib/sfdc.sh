@@ -161,14 +161,13 @@ install_package_version() {
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
-  # PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create \
-  #   -p $SFDX_PACKAGE_NAME \
-  #   -n $VERSION_NUMBER \
-  #   -v $DEVHUB_USERNAME \
-  #   -w 100 \
-  #   --json \
-  #   -x | jq -r '.result.SubscriberPackageVersionId')"
-  PACKAGE_VERSION_ID="123"
+  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create \
+    -p $SFDX_PACKAGE_NAME \
+    -n $VERSION_NUMBER \
+    -v $DEVHUB_USERNAME \
+    -w 100 \
+    --json \
+    -x | jq -r '.result.SubscriberPackageVersionId')"
 
   prepare_proc \
     "$SFDX_PACKAGE_NAME" \
@@ -180,16 +179,16 @@ install_package_version() {
     "$DEVHUB_USERNAME" \
     "$DEV_HUB_INSTANCE_URL"
 
-  # prepare_sfdc_environment \
-  #   "$INSTANCE_URL" \
-  #   "$USERNAME"
+  prepare_sfdc_environment \
+    "$INSTANCE_URL" \
+    "$USERNAME"
 
-  # sfdx force:package:install \
-  #   -p "$PACKAGE_VERSION_ID" \
-  #   -u "$USERNAME" \
-  #   -w 100 \
-  #   -b 100 \
-  #   -r
+  sfdx force:package:install \
+    -p "$PACKAGE_VERSION_ID" \
+    -u "$USERNAME" \
+    -w 100 \
+    -b 100 \
+    -r
 }
 
 get_package_version() {
