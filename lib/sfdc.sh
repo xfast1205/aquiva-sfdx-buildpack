@@ -110,9 +110,18 @@ check_package_in_project_file() {
         | select(.ContainerOptions==$PACKAGE_TYPE)
         .Id')"
     PATH="$(cat sfdx-project.json |
-      jq -r  '.packageDirectories[]
+      jq -r '.packageDirectories[]
         | select(.default==true)
         .path')"
+    NAMESPACE="$(cat sfdx-project.json |
+      jq -r '.namespace')"
+    API_VERSION="$(cat sfdx-project.json |
+      jq -r '.sourceApiVersion')"
+    LOGIN_URL="$(cat sfdx-project.json |
+      jq -r '.sfdcLoginUrl')"
+    if [ "$STAGE" == "DEV" ]; then
+      NAMESPACE=""
+    fi
     SFDX_PROJECT_TEMPLATE="{ \
       \"packageDirectories\": [ \
           { \
@@ -123,9 +132,9 @@ check_package_in_project_file() {
               \"versionNumber\": \"0.1.0.NEXT\" \
           } \
       ], \
-      \"namespace\": \"\", \
-      \"sfdcLoginUrl\": \"https://login.salesforce.com\", \
-      \"sourceApiVersion\": \"47.0\", \
+      \"namespace\": \"$NAMESPACE\", \
+      \"sfdcLoginUrl\": \"$LOGIN_URL\", \
+      \"sourceApiVersion\": \"$API_VERSION\", \
       \"packageAliases\": { \
           \"$PACKAGE_NAME\": \"$PACKAGE_ID\" \
       } \
