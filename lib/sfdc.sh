@@ -114,7 +114,8 @@ check_package_in_project_file() {
       jq -r '.packageDirectories[]
         | select(.default==true)
         .path')"
-    API_VERSION="$(cat sfdx-project.json | jq -r '.sourceApiVersion')"
+    API_VERSION="47.0"
+    # API_VERSION="$(cat sfdx-project.json | jq -r '.sourceApiVersion')"
     LOGIN_URL="$(cat sfdx-project.json | jq -r '.sfdcLoginUrl')"
     if [ "$STAGE" == "DEV" ]; then
       NAMESPACE=""
