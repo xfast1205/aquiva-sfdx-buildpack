@@ -24,6 +24,7 @@ header "Running release.sh ..."
 
 promote_package() {
   log "Promote package ..."
+  INSTANCE_URL=${1:-}
 
   prepare_sfdc_environment \
     "$DEVHUB_INSTANCE_URL" \
@@ -47,7 +48,7 @@ promote_package() {
 
 }
 
-promote_package
+promote_package "$INSTANCE_URL"
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0
