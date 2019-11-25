@@ -27,32 +27,32 @@ source lib/sfdc.sh
 
 header "Running release.sh ..."
 
-promote_package() {
-  log "Promote package ..."
+# promote_package() {
+#   log "Promote package ..."
 
-  prepare_sfdc_environment \
-    "$DEVHUB_INSTANCE_URL" \
-    "$DEVHUB_USERNAME"
+#   prepare_sfdc_environment \
+#     "$DEVHUB_INSTANCE_URL" \
+#     "$DEVHUB_USERNAME"
 
-  sfdx force:package:version:promote \
-    -p "$TARGET_PACKAGE_VERSION_ID" \
-    -v "$DEVHUB_USERNAME" \
-    -n
+#   sfdx force:package:version:promote \
+#     -p "$TARGET_PACKAGE_VERSION_ID" \
+#     -v "$DEVHUB_USERNAME" \
+#     -n
 
-  prepare_sfdc_environment \
-    "$TARGET_ORG_INSTANCE_URL" \
-    "$TARGET_ORG_USERNAME"
+#   prepare_sfdc_environment \
+#     "$TARGET_ORG_INSTANCE_URL" \
+#     "$TARGET_ORG_USERNAME"
 
-  sfdx force:package:install \
-    -p "$TARGET_PACKAGE_VERSION_ID" \
-    -u "$TARGET_ORG_USERNAME" \
-    -w 10 \
-    -b 10 \
-    -r
+#   sfdx force:package:install \
+#     -p "$TARGET_PACKAGE_VERSION_ID" \
+#     -u "$TARGET_ORG_USERNAME" \
+#     -w 10 \
+#     -b 10 \
+#     -r
 
-}
+# }
 
-promote_package
+# promote_package
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 exit 0
