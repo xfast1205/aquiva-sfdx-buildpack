@@ -17,8 +17,7 @@ sfdx_create_scratch() {
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
   USERNAME=${1:-}
-  pwd
-  ls -la
+
   sfdx force:source:push \
     -u "$USERNAME"
 }
@@ -220,14 +219,21 @@ install_package_version() {
   DEV_HUB_INSTANCE_URL=${7:-}
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
-
-  PACKAGE_VERSION_ID="$(eval sfdx force:package:version:create \
+  COMMAND_CREATE="force:package:version:create \
     -p $SFDX_PACKAGE_NAME \
     -n $VERSION_NUMBER \
     -v $DEVHUB_USERNAME \
     -w 100 \
-    --json \
-    -x | jq -r '.result.SubscriberPackageVersionId')"
+    --json -x "
+
+  if [ ! "$STAGE" == "DEV" ]; then
+    COMMAND_CREATE="${COMMAND_CREATE}-c"
+  fi
+
+  PACKAGE_VERSION_ID="$(eval $COMMAND_CREATE |
+    jq -r '.result.SubscriberPackageVersionId')"
+
+  echo "$PACKAGE_VERSION_ID"
 
   # prepare_proc \
   #   "$SFDX_PACKAGE_NAME" \
