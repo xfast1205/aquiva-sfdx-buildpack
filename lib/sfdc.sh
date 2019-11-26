@@ -17,7 +17,7 @@ sfdx_create_scratch() {
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
   USERNAME=${1:-}
-
+  ls -la
   sfdx force:source:push \
     -u "$USERNAME"
 }
@@ -60,7 +60,6 @@ create_package() {
   if [ ! "$STAGE" == "DEV" ]; then
     NEW_PROJECT_FILE="$(jq --arg NAMESPACE "$PACKAGE_NAMESPACE" '.namespace=$NAMESPACE' sfdx-project.json)"
     echo "$NEW_PROJECT_FILE" > "./sfdx-project.json"
-    cat ./sfdx-project.json
   fi
 
   sfdx force:package:create \
