@@ -57,8 +57,13 @@ create_package() {
       | select(.package==$PACKAGE_NAME)
       | .path')"
 
-  NEW_PROJECT_FILE="$(jq '.namespace="$PACKAGE_NAMESPACE"' sfdx-project.json)"
-  echo "$NEW_PROJECT_FILE" > "./sfdx-project.json"
+  echo "$PACKAGE_NAMESPACE"
+
+  if [ ! "$STAGE" == "DEV" ]; then
+    NEW_PROJECT_FILE="$(jq '.namespace="$PACKAGE_NAMESPACE"' sfdx-project.json)"
+    echo "$NEW_PROJECT_FILE" > "./sfdx-project.json"
+    cat ./sfdx-project.json
+  fi
 
   sfdx force:package:create \
     -r "$PACKAGE_PATH" \
