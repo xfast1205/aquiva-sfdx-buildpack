@@ -69,15 +69,16 @@ check_package_on_devhub() {
   USERNAME=${1:-}
   PACKAGE_NAME=${2:-}
 
-  IS_PACKAGE_EXISTS="$(eval sfdx force:package:list -v $USERNAME --json |
-    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.result[]
-      | select(.Name==$PACKAGE_NAME)')"
-  
   if [ "$STAGE" == "DEV" ]; then
     PACKAGE_TYPE="Unlocked"
   else
     PACKAGE_TYPE="Managed"
   fi
+
+  IS_PACKAGE_EXISTS="$(sfdx force:package:list -v $USERNAME --json |
+    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" --arg PACKAGE_TYPE "$PACKAGE_TYPE" '.result[]
+      | select(.Name==$PACKAGE_NAME)
+      | select(.ContainerOptions==$PACKAGE_TYPE)')"
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
     echo "Installing package on Dev Hub ..."
@@ -104,12 +105,16 @@ check_package_in_project_file() {
     jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)')"
 
-  if [ -z "$IS_PACKAGE_EXISTS" ]; then
-    PACKAGE_ID="$(sfdx force:package:list -v "$USERNAME" --json |
+  PACKAGE_ID="$(sfdx force:package:list -v "$USERNAME" --json |
       jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" --arg PACKAGE_TYPE "$PACKAGE_TYPE" '.result[]
         | select(.Name==$PACKAGE_NAME)
         | select(.ContainerOptions==$PACKAGE_TYPE)
         .Id')"
+  if [ ! -z "$PACKAGE_ID" ]; then
+    IS_CONTAINS_ID="$(grep "$PACKAGE_ID" "./sfdx-project.json")"
+  fi
+
+  if [[ -z "$IS_PACKAGE_EXISTS" || -z "$IS_CONTAINS_ID" ]]; then
     PACKAGE_PATH="$(cat sfdx-project.json |
       jq -r '.packageDirectories[]
         | select(.default==true)
@@ -136,8 +141,7 @@ check_package_in_project_file() {
           \"$PACKAGE_NAME\": \"$PACKAGE_ID\" \
       } \
     }"
-    ls -la
-    pwd
+
     echo "$SFDX_PROJECT_TEMPLATE" > "./sfdx-project.json"
   fi
 }
@@ -207,10 +211,6 @@ install_package_version() {
   BUILD_DIR=${5:-}
   BP_DIR=${6:-}
   DEV_HUB_INSTANCE_URL=${7:-}
-
-  pwd
-  ls -la
-  cat sfdx-project.json
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
