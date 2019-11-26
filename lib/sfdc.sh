@@ -17,6 +17,7 @@ sfdx_create_scratch() {
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
   USERNAME=${1:-}
+  pwd
   ls -la
   sfdx force:source:push \
     -u "$USERNAME"
@@ -117,8 +118,9 @@ check_package_in_project_file() {
         .Id')"
 
   if [ ! -z "$PACKAGE_ID" ]; then
-    grep "$PACKAGE_ID" "./sfdx-project.json"
-    IS_CONTAINS_ID="$(grep "$PACKAGE_ID" "./sfdx-project.json")"
+    which grep
+    grep "$PACKAGE_ID" sfdx-project.json
+    IS_CONTAINS_ID="$(grep "$PACKAGE_ID" sfdx-project.json)"
     echo "$IS_CONTAINS_ID"
   fi
 
