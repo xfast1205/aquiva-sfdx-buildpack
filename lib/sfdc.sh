@@ -118,7 +118,8 @@ check_package_in_project_file() {
         .Id')"
 
   if [ ! -z "$PACKAGE_ID" ]; then
-    which grep
+    echo "$PACKAGE_ID"
+    cat sfdx-project.json
     grep "$PACKAGE_ID" sfdx-project.json
     IS_CONTAINS_ID="$(grep "$PACKAGE_ID" sfdx-project.json)"
     echo "$IS_CONTAINS_ID"
