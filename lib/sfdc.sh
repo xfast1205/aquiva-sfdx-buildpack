@@ -233,7 +233,7 @@ install_package_version() {
   PACKAGE_VERSION_ID="$(eval $COMMAND_CREATE |
     jq -r '.result.SubscriberPackageVersionId')"
 
-  echo "$PACKAGE_VERSION_ID"
+  echo "$COMMAND_CREATE"
 
   # prepare_proc \
   #   "$SFDX_PACKAGE_NAME" \
