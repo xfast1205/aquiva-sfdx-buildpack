@@ -17,7 +17,7 @@ sfdx_create_scratch() {
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
   USERNAME=${1:-}
-  ls -la
+
   cat sfdx-project.json
   sfdx force:source:push \
     -u "$USERNAME"
