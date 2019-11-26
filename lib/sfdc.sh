@@ -117,9 +117,9 @@ check_package_in_project_file() {
         | select(.ContainerOptions==$PACKAGE_TYPE)
         .Id')"
 
-  if [ ! -z "$PACKAGE_ID" ]; then
-    # IS_CONTAINS_ID="$(grep "$PACKAGE_ID" sfdx-project.json)"
-  fi
+  # if [ ! -z "$PACKAGE_ID" ]; then
+  #   # IS_CONTAINS_ID="$(grep "$PACKAGE_ID" sfdx-project.json)"
+  # fi
 
   if [[ -z "$IS_PACKAGE_EXISTS" || -z "$IS_CONTAINS_ID" ]]; then
     PACKAGE_PATH="$(cat sfdx-project.json |
