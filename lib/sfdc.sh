@@ -51,6 +51,7 @@ create_package() {
   PACKAGE_NAME=${1:-}
   PACKAGE_TYPE=${2:-}
   USERNAME=${3:-}
+  NAMESPACE="$PACKAGE_NAMESPACE"
 
   PACKAGE_PATH="$(cat sfdx-project.json |
     jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
@@ -60,7 +61,7 @@ create_package() {
   echo "$PACKAGE_NAMESPACE"
 
   if [ ! "$STAGE" == "DEV" ]; then
-    NEW_PROJECT_FILE="$(jq '.namespace="$PACKAGE_NAMESPACE"' sfdx-project.json)"
+    NEW_PROJECT_FILE="$(jq '.namespace="$NAMESPACE"' sfdx-project.json)"
     echo "$NEW_PROJECT_FILE" > "./sfdx-project.json"
     cat ./sfdx-project.json
   fi
