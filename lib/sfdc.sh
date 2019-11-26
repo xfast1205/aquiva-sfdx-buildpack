@@ -57,6 +57,9 @@ create_package() {
       | select(.package==$PACKAGE_NAME)
       | .path')"
 
+  NEW_PROJECT_FILE="$(jq '.namespace="$PACKAGE_NAMESPACE"' sfdx-project.json)"
+  echo "$NEW_PROJECT_FILE" > "./sfdx-project.json"
+
   sfdx force:package:create \
     -r "$PACKAGE_PATH" \
     -n "$PACKAGE_NAME" \
@@ -110,6 +113,7 @@ check_package_in_project_file() {
         | select(.Name==$PACKAGE_NAME)
         | select(.ContainerOptions==$PACKAGE_TYPE)
         .Id')"
+
   if [ ! -z "$PACKAGE_ID" ]; then
     IS_CONTAINS_ID="$(grep "$PACKAGE_ID" "./sfdx-project.json")"
   fi
