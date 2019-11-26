@@ -219,7 +219,7 @@ install_package_version() {
   DEV_HUB_INSTANCE_URL=${7:-}
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
-  COMMAND_CREATE="force:package:version:create \
+  COMMAND_CREATE="sfdx force:package:version:create \
     -p $SFDX_PACKAGE_NAME \
     -n $VERSION_NUMBER \
     -v $DEVHUB_USERNAME \
