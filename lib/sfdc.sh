@@ -109,7 +109,6 @@ check_package_in_project_file() {
   IS_PACKAGE_EXISTS="$(cat sfdx-project.json |
     jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
       | select(.package==$PACKAGE_NAME)')"
-      ls -la
 
   PACKAGE_ID="$(sfdx force:package:list -v "$USERNAME" --json |
       jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" --arg PACKAGE_TYPE "$PACKAGE_TYPE" '.result[]
@@ -118,9 +117,9 @@ check_package_in_project_file() {
         .Id')"
 
   if [ ! -z "$PACKAGE_ID" ]; then
-    echo "123"
+    grep "$PACKAGE_ID" "./sfdx-project.json"
     IS_CONTAINS_ID="$(grep "$PACKAGE_ID" "./sfdx-project.json")"
-    echo "&IS_CONTAINS_ID"
+    echo "$IS_CONTAINS_ID"
   fi
 
   if [[ -z "$IS_PACKAGE_EXISTS" || -z "$IS_CONTAINS_ID" ]]; then
