@@ -136,7 +136,8 @@ check_package_in_project_file() {
           \"$PACKAGE_NAME\": \"$PACKAGE_ID\" \
       } \
     }"
-
+    ls -la
+    pwd
     echo "$SFDX_PROJECT_TEMPLATE" > "./sfdx-project.json"
   fi
 }
@@ -206,6 +207,10 @@ install_package_version() {
   BUILD_DIR=${5:-}
   BP_DIR=${6:-}
   DEV_HUB_INSTANCE_URL=${7:-}
+
+  pwd
+  ls -la
+  cat sfdx-project.json
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
 
