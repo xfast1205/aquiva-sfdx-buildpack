@@ -10,14 +10,3 @@ header() {
 log() {
   echo -e "       $*"
 }
-
-debug() {
-  if [ "$SFDX_BUILDPACK_DEBUG" == "true" ] ; then
-    echo "       [DEBUG] $*"
-  fi
-}
-
-setup_dirs() {
-  local DIR="$1"
-  export PATH="$DIR/vendor/sfdx/cli/bin:$PATH"
-}

@@ -1,2 +1,3 @@
 # aquiva-sfdx-buildpack
-# Custom Heroku buildpack for deploying/testing SFDC code
+
+This is a custom Heroku buildpack for deploying/testing/packaging SFDC code using SFDX

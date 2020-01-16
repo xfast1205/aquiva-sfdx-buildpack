@@ -3,13 +3,11 @@
 
 START_TIME=$SECONDS
 
-# set -x
-set -o errexit    # always exit on error
-set -o pipefail   # don't ignore exit codes when piping output
-unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
+set -o errexit
+set -o pipefail
+unset GIT_DIR
 
 # Configure directories
-
 BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
@@ -18,13 +16,11 @@ NUMBER=$(date +%s)
 TARGET_SCRATCH_ORG_ALIAS="scratch-$NUMBER"
 
 # Import dependencies
-
 source $BP_DIR/lib/lib.sh
 source $BP_DIR/lib/deps.sh
 source $BP_DIR/lib/sfdc.sh
 
 # Prepare environment
-
 setup_dirs() {
   export PATH="$BUILD_DIR/vendor/sfdx/cli/bin:$PATH"
   export PATH="$BUILD_DIR/vendor/sfdx/jq:$PATH"
@@ -40,39 +36,18 @@ export_env_dir() {
 }
 
 # SFDC processes
-
 deploy_to_scratch() {
 
-  RESPONSE_DEV_HUB=$(make_soap_request \
-    "$DEV_HUB_USERNAME" \
-    "$DEV_HUB_PASSWORD" \
-    "$DEV_HUB_TOKEN" \
-    "false")
-
-  DEV_HUB_SESSION_ID=$(get_session_id \
-    "$RESPONSE_DEV_HUB")
-
-  DEV_HUB_INSTANCE_URL=$(get_instance_url \
-    "$RESPONSE_DEV_HUB")
-
-  prepare_sfdc_environment \
-    "$DEV_HUB_INSTANCE_URL" \
-    "$DEV_HUB_SESSION_ID"
-
-  remove_temp_files
-
-  # is_package_exists_on_devhub \
-  #   "$DEV_HUB_SESSION_ID" \
-  #   "$SFDX_PACKAGE_NAME"
-  # is_package_exists_in_project_file \
-  #   "$SFDX_PACKAGE_NAME"
+  sfdx_auth_store_url \
+    "$DEV_HUB_REFRESH_TOKEN" \
+    "$DEV_HUB_INSTANCE_URL"
 
   check_package_on_devhub \
-    "$DEV_HUB_SESSION_ID" \
+    "$DEV_HUB_INSTANCE_URL" \
     "$SFDX_PACKAGE_NAME"
 
   sfdx_create_scratch \
-    "$DEV_HUB_SESSION_ID" \
+    "$DEV_HUB_INSTANCE_URL" \
     "$TARGET_SCRATCH_ORG_ALIAS"
 
   sfdx_source_push \
@@ -83,60 +58,24 @@ deploy_to_scratch() {
 
   sfdx_delete_scratch \
     "$TARGET_SCRATCH_ORG_ALIAS" \
-    "$DEV_HUB_SESSION_ID"
+    "$DEV_HUB_INSTANCE_URL"
 
 }
 
 install_package() {
 
-  if [ "$STAGE" == "DEV" ]; then
-    USERNAME="$DEV_USERNAME"
-    PASSWORD="$DEV_PASSWORD"
-    TOKEN="$DEV_TOKEN"
-    IS_SANDBOX="$DEV_IS_SANDBOX"
-  else
-    USERNAME="$STAGING_USERNAME"
-    PASSWORD="$STAGING_PASSWORD"
-    TOKEN="$STAGING_TOKEN"
-    IS_SANDBOX="$STAGING_IS_SANDBOX"
-  fi
+  sfdx_auth_store_url \
+    "$DEV_HUB_REFRESH_TOKEN" \
+    "$DEV_HUB_INSTANCE_URL"
 
-  RESPONSE_DEV_HUB=$(make_soap_request \
-    "$DEV_HUB_USERNAME" \
-    "$DEV_HUB_PASSWORD" \
-    "$DEV_HUB_TOKEN" \
-    "false")
-
-  DEV_HUB_SESSION_ID=$(get_session_id \
-    "$RESPONSE_DEV_HUB")
-
-  DEV_HUB_INSTANCE_URL=$(get_instance_url \
-    "$RESPONSE_DEV_HUB")
-
-  RESPONSE=$(make_soap_request \
-    "$USERNAME" \
-    "$PASSWORD" \
-    "$TOKEN" \
-    "$IS_SANDBOX")
-
-  TARGET_SESSION_ID=$(get_session_id \
-    "$RESPONSE")
-
-  TARGET_INSTANCE_URL=$(get_instance_url \
-    "$RESPONSE")
-
-  prepare_sfdc_environment \
-    "$DEV_HUB_INSTANCE_URL" \
-    "$DEV_HUB_SESSION_ID"
+  sfdx_auth_store_url \
+    "$SF_ORG_REFRESH_TOKEN" \
+    "$SF_ORG_INSTANCE_URL"
 
   install_package_version \
     "$SFDX_PACKAGE_NAME" \
-    "$DEV_HUB_SESSION_ID" \
-    "$TARGET_SESSION_ID" \
-    "$TARGET_INSTANCE_URL" \
-    "$BUILD_DIR" \
-    "$BP_DIR" \
-    "$DEV_HUB_INSTANCE_URL"
+    "$DEV_HUB_INSTANCE_URL" \
+    "$SF_ORG_INSTANCE_URL"
 
 }
 
@@ -170,21 +109,9 @@ if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
   log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
 fi
 
-# Deploy on app review
-
-cd $BUILD_DIR
-
-if [ "$STAGE" == "" ]; then
-  header "Review App deploy ..."
-
-  deploy_to_scratch
-
-fi
-
-# Deploy on Dev org
-
+# Deploy on QA org
 if [ "$STAGE" == "DEV" ]; then
-  header "Develop App deploy ..."
+  header "QA org deploy ..."
 
   deploy_to_scratch
 
@@ -193,9 +120,8 @@ if [ "$STAGE" == "DEV" ]; then
 fi
 
 # Deploy on Staging org
-
 if [ "$STAGE" == "STAGING" ]; then
-  header "Staging App deploy ..."
+  header "Staging org deploy ..."
 
   deploy_to_scratch
 

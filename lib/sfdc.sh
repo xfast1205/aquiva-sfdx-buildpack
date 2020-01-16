@@ -3,6 +3,18 @@
 
 source $BP_DIR/lib/lib.sh
 
+sfdx_auth_store_url() {
+  log "Authenticating org ..."
+  REFRESH_TOKEN=${1:-}
+  INSTANCE_URL=${2:-}
+
+  echo "force://$REFRESH_TOKEN@$INSTANCE_URL" > sfdx.url
+
+  sfdx force:auth:sfdxurl:store \
+    -f ./sfdx.url \
+    -a "$INSTANCE_URL"
+}
+
 sfdx_create_scratch() {
   log "Creating scratch org ..."
   USERNAME=${1:-}
@@ -11,14 +23,14 @@ sfdx_create_scratch() {
   sfdx force:org:create \
     -v "$USERNAME" \
     -a "$ALIAS" \
-    -f ./config/project-scratch-def.json
+    -f ./config/project-scratch-def.json \
+    -c
 }
 
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
   USERNAME=${1:-}
 
-  cat sfdx-project.json
   sfdx force:source:push \
     -u "$USERNAME"
 }
@@ -28,7 +40,6 @@ sfdx_run_test() {
   USERNAME=${1:-}
 
   sfdx force:apex:test:run \
-    -l RunLocalTests \
     -u "$USERNAME" \
     --verbose \
     -r human \
@@ -54,12 +65,12 @@ create_package() {
   USERNAME=${3:-}
 
   PACKAGE_PATH="$(cat sfdx-project.json |
-    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.packageDirectories[]
-      | select(.package==$PACKAGE_NAME)
+    jq -r '.packageDirectories[]
+      | select(.default==true)
       | .path')"
 
-  if [ "$STAGE" == "STAGING" ]; then
-    NEW_PROJECT_FILE="$(jq --arg NAMESPACE "$PACKAGE_NAMESPACE" '.namespace=$NAMESPACE' sfdx-project.json)"
+  if [ ! "$STAGE" == "DEV" ]; then
+    NEW_PROJECT_FILE="$(jq -r --arg NAMESPACE "$PACKAGE_NAMESPACE" '.namespace=$NAMESPACE' sfdx-project.json)"
     echo "$NEW_PROJECT_FILE" > "./sfdx-project.json"
   fi
 
@@ -70,8 +81,9 @@ create_package() {
     -v "$USERNAME"
 }
 
+# Validation if the package exists on Dev Hub
 check_package_on_devhub() {
-  log "Checking Package on Dev Hub ..."
+  log "Searching Package on Dev Hub ..."
   USERNAME=${1:-}
   PACKAGE_NAME=${2:-}
 
@@ -87,7 +99,7 @@ check_package_on_devhub() {
       | select(.ContainerOptions==$PACKAGE_TYPE)')"
 
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
-    echo "Installing package on Dev Hub ..."
+    echo "Creating package on Dev Hub ..."
     create_package \
       "$PACKAGE_NAME" \
       "$PACKAGE_TYPE" \
@@ -100,8 +112,9 @@ check_package_on_devhub() {
     "$USERNAME"
 }
 
+# Validation if the package exists in sfdx-project.json file
 check_package_in_project_file() {
-  log "Checking Package in project files ..."
+  log "Searching Package in project files ..."
   PACKAGE_NAME=${1:-}
   PACKAGE_TYPE=${2:-}
   USERNAME=${3:-}
@@ -112,11 +125,12 @@ check_package_in_project_file() {
       | select(.package==$PACKAGE_NAME)')"
 
   PACKAGE_ID="$(sfdx force:package:list -v "$USERNAME" --json |
-      jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" --arg PACKAGE_TYPE "$PACKAGE_TYPE" '.result[]
-        | select(.Name==$PACKAGE_NAME)
-        | select(.ContainerOptions==$PACKAGE_TYPE)
-        .Id')"
+    jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" --arg PACKAGE_TYPE "$PACKAGE_TYPE" '.result[]
+      | select(.Name==$PACKAGE_NAME)
+      | select(.ContainerOptions==$PACKAGE_TYPE)
+      .Id')"
 
+  # Create package if it's not exists
   if [ -z "$IS_PACKAGE_EXISTS" ]; then
     PACKAGE_PATH="$(cat sfdx-project.json |
       jq -r '.packageDirectories[]
@@ -134,7 +148,8 @@ check_package_in_project_file() {
               \"default\": true, \
               \"package\": \"$PACKAGE_NAME\", \
               \"versionName\": \"ver 0.1\", \
-              \"versionNumber\": \"0.1.0.NEXT\" \
+              \"versionNumber\": \"1.0.0.NEXT\", \
+              \"ancestorId\": \"\"
           } \
       ], \
       \"namespace\": \"$NAMESPACE\", \
@@ -147,62 +162,7 @@ check_package_in_project_file() {
 
     echo "$SFDX_PROJECT_TEMPLATE" > "./sfdx-project.json"
   fi
-}
 
-is_namespace_exists_in_project_file() {
-  log "Checking Namespace in project files ..."
-  NAMESPACE=${1:-}
-
-  IS_NAMESPACE_EXISTS="$(cat sfdx-project.json |
-    jq -r --arg NAMESPACE "$NAMESPACE" '.packageDirectories[]
-      | select(.namespace==$NAMESPACE)')"
-
-  if [ -z "$IS_NAMESPACE_EXISTS" ]; then
-    echo "Please link namespace to your Dev Hub and update sfdx-project.json file"
-    exit 1
-  fi
-}
-
-prepare_sfdc_environment() {
-  log "Prepare Environment configs ..."
-  INSTANCE_URL=${1:-}
-  USERNAME=${2:-}
-  SF_URL="https://$INSTANCE_URL"
-
-  sfdx force:config:set \
-    instanceUrl="$SF_URL"
-
-  sfdx force:config:set \
-    defaultusername="$USERNAME"
-}
-
-prepare_proc() {
-  if [ ! -f $5/Procfile ]; then
-    log "Creating Procfile ..."
-    SFDX_PACKAGE_NAME=${1:-}
-    PACKAGE_VERSION_ID=${2:-}
-    DEV_SESSION_ID=${3:-}
-    DEV_INSTANCE_URL=${4:-}
-    BUILD_DIR=${5:-}
-    BP_DIR=${6:-}
-    DEVHUB_USERNAME=${7:-}
-    DEV_HUB_INSTANCE_URL=${8:-}
-
-    echo "release: bash ./lib/release.sh \
-      \"$SFDX_PACKAGE_NAME\" \
-      \"$PACKAGE_VERSION_ID\" \
-      \"$DEV_SESSION_ID\" \
-      \"$DEV_INSTANCE_URL\" \
-      \"$DEVHUB_USERNAME\" \
-      \"$DEV_HUB_INSTANCE_URL\"" > $BUILD_DIR/Procfile
-
-    mkdir $BUILD_DIR/lib/
-    cp $BP_DIR/lib/release.sh $BUILD_DIR/lib/
-    cp $BP_DIR/lib/deps.sh $BUILD_DIR/lib/
-    cp $BP_DIR/lib/sfdc.sh $BUILD_DIR/lib/
-    cp $BP_DIR/lib/lib.sh $BUILD_DIR/lib/
-
-  fi
 }
 
 install_package_version() {
@@ -210,12 +170,25 @@ install_package_version() {
   SFDX_PACKAGE_NAME=${1:-}
   DEVHUB_USERNAME=${2:-}
   TARGET_USERNAME=${3:-}
-  TARGET_INSTANCE_URL=${4:-}
-  BUILD_DIR=${5:-}
-  BP_DIR=${6:-}
-  DEV_HUB_INSTANCE_URL=${7:-}
 
   VERSION_NUMBER=$(get_package_version $SFDX_PACKAGE_NAME $DEVHUB_USERNAME)
+  echo "$VERSION_NUMBER"
+  LATEST_VERSION="$(eval sfdx force:package:version:list \
+    -v $DEVHUB_USERNAME \
+    -p $SFDX_PACKAGE_NAME \
+    --concise \
+    --json |
+    jq -r '.result
+      | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber)
+      | .[0].SubscriberPackageVersionId')"
+
+  if [[ ! "$LATEST_VERSION" == "null" && ! "$STAGE" == "DEV" ]]; then
+    UPDATED_PROJECT_FILE="$(cat sfdx-project.json | jq -r --arg ANCESTOR "$LATEST_VERSION" '.packageDirectories[].ancestorId=$ANCESTOR')"
+  else
+    UPDATED_PROJECT_FILE="$(cat sfdx-project.json | jq -r 'del(.packageDirectories[].ancestorId)')"
+  fi
+  echo "$UPDATED_PROJECT_FILE" > "./sfdx-project.json"
+
   COMMAND_CREATE="sfdx force:package:version:create \
     -p $SFDX_PACKAGE_NAME \
     -n $VERSION_NUMBER \
@@ -230,24 +203,12 @@ install_package_version() {
   PACKAGE_VERSION_ID="$(eval $COMMAND_CREATE |
     jq -r '.result.SubscriberPackageVersionId')"
 
-  # prepare_proc \
-  #   "$SFDX_PACKAGE_NAME" \
-  #   "$PACKAGE_VERSION_ID" \
-  #   "$USERNAME" \
-  #   "$INSTANCE_URL" \
-  #   "$BUILD_DIR" \
-  #   "$BP_DIR" \
-  #   "$DEVHUB_USERNAME" \
-  #   "$DEV_HUB_INSTANCE_URL"
-
-  sfdx force:package:version:promote \
-    -p "$PACKAGE_VERSION_ID" \
-    -v "$DEVHUB_USERNAME" \
-    -n
-
-  prepare_sfdc_environment \
-    "$TARGET_INSTANCE_URL" \
-    "$TARGET_USERNAME"
+  if [ ! "$STAGE" == "DEV" ]; then
+    sfdx force:package:version:promote \
+      -p "$PACKAGE_VERSION_ID" \
+      -v "$DEVHUB_USERNAME" \
+      -n
+  fi
 
   sfdx force:package:install \
     -p "$PACKAGE_VERSION_ID" \
@@ -255,11 +216,30 @@ install_package_version() {
     -w 100 \
     -b 100 \
     -r
+
+  echo "Package installation URL: https://login.salesforce.com/packaging/installPackage.apexp?p0=$PACKAGE_VERSION_ID"
 }
 
 get_package_version() {
   SFDX_PACKAGE_NAME=${1:-}
   DEVHUB_USERNAME=${2:-}
+
+  if [ "$STAGE" == "DEV" ]; then
+    MANAGED_PACKAGE_ID="$(sfdx force:package:list \
+      -v $DEVHUB_USERNAME --json | jq -r --arg PACKAGE_NAME "$PACKAGE_NAME" '.result[]
+        | select(.Name==$PACKAGE_NAME)
+        | select(.ContainerOptions=="Managed").Id')"
+  fi
+
+  if [ ! -z $MANAGED_PACKAGE_ID ]; then
+    MANAGED_MINOR_VERSION="$(eval sfdx force:package:version:list \
+      -v $DEVHUB_USERNAME \
+      -p $MANAGED_PACKAGE_ID \
+      --concise \
+      --json |
+      jq -r '.result
+        | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0].MinorVersion')"
+  fi
 
   PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list \
     -v $DEVHUB_USERNAME \
@@ -277,7 +257,10 @@ get_package_version() {
   if [ -z $MAJOR_VERSION ]; then MAJOR_VERSION=1; fi;
   if [ -z $MINOR_VERSION ]; then MINOR_VERSION=0; fi;
   if [ -z $PATCH_VERSION ]; then PATCH_VERSION=0; fi;
-  if [ "$IS_RELEASED" = "true" ]; then MINOR_VERSION=$(($MINOR_VERSION+1)); fi;
+
+  if [ ! -z $MANAGED_MINOR_VERSION ]; then MINOR_VERSION=$MANAGED_MINOR_VERSION; fi;
+  if [ "$IS_RELEASED" == "true" ]; then MINOR_VERSION=$(($MINOR_VERSION+1)); fi;
+
   VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
 
   echo "$VERSION_NUMBER"
