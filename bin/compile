@@ -109,6 +109,8 @@ if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
   log "Generated $BUILD_DIR/.profile.d/path.sh to add CLI path"
 fi
 
+cd $BUILD_DIR
+
 # Deploy on QA org
 if [ "$STAGE" == "DEV" ]; then
   header "QA org deploy ..."
