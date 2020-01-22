@@ -39,6 +39,9 @@ sfdx_run_test() {
   log "Running org tests ..."
   USERNAME=${1:-}
 
+  trap 'echo "11"' ERR
+  trap 'echo "12"' EXIT
+
   sfdx force:apex:test:run \
     -u "$USERNAME" \
     --verbose \
