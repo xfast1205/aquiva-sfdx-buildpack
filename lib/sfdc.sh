@@ -39,8 +39,10 @@ sfdx_run_test() {
   log "Running org tests ..."
   USERNAME=${1:-}
 
-  trap 'echo "11"' ERR
-  trap 'echo "12"' EXIT
+  trap 'sfdx_delete_scratch \
+    "$TARGET_SCRATCH_ORG_ALIAS" \
+    "$DEV_HUB_INSTANCE_URL"' \
+  ERR
 
   sfdx force:apex:test:run \
     -u "$USERNAME" \
