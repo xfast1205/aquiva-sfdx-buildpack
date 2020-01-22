@@ -40,8 +40,6 @@ sfdx_run_test() {
   log "Running org tests ..."
   USERNAME=${1:-}
 
-  add_trap
-
   sfdx force:apex:test:run \
     -u "$USERNAME" \
     --verbose \

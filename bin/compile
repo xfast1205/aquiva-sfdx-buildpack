@@ -35,6 +35,8 @@ export_env_dir() {
   fi
 }
 
+add_trap
+
 # SFDC processes
 deploy_to_scratch() {
 
