@@ -39,3 +39,10 @@ verify_project_file() {
     exit 1
   fi
 }
+
+add_trap() {
+  trap 'sfdx_delete_scratch \
+    "$TARGET_SCRATCH_ORG_ALIAS" \
+    "$DEV_HUB_INSTANCE_URL"' \
+  ERR
+}

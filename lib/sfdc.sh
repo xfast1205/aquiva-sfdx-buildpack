@@ -2,6 +2,7 @@
 # SFDC dependencies for aquiva buildpack
 
 source $BP_DIR/lib/lib.sh
+source $BP_DIR/lib/deps.sh
 
 sfdx_auth_store_url() {
   log "Authenticating org ..."
@@ -33,13 +34,6 @@ sfdx_source_push() {
 
   sfdx force:source:push \
     -u "$USERNAME"
-}
-
-add_trap() {
-  trap 'sfdx_delete_scratch \
-    "$TARGET_SCRATCH_ORG_ALIAS" \
-    "$DEV_HUB_INSTANCE_URL"' \
-  ERR
 }
 
 sfdx_run_test() {
