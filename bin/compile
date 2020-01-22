@@ -35,8 +35,6 @@ export_env_dir() {
   fi
 }
 
-add_trap
-
 # SFDC processes
 deploy_to_scratch() {
 
@@ -51,6 +49,8 @@ deploy_to_scratch() {
   sfdx_create_scratch \
     "$DEV_HUB_INSTANCE_URL" \
     "$TARGET_SCRATCH_ORG_ALIAS"
+
+  add_trap
 
   sfdx_source_push \
     "$TARGET_SCRATCH_ORG_ALIAS"
