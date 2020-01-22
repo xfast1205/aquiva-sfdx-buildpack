@@ -35,6 +35,13 @@ export_env_dir() {
   fi
 }
 
+# Remove scratch on errors
+trap \
+  'sfdx_delete_scratch \
+    "$TARGET_SCRATCH_ORG_ALIAS" \
+    "$DEV_HUB_INSTANCE_URL"' \
+ERR
+
 # SFDC processes
 deploy_to_scratch() {
 
