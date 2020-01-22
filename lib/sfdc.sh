@@ -31,7 +31,7 @@ sfdx_create_scratch() {
 sfdx_source_push() {
   log "Pushing source to the scratch ..."
   USERNAME=${1:-}
-  add_trap
+  handle_errors
 
   sfdx force:source:push \
     -u "$USERNAME"
@@ -40,7 +40,7 @@ sfdx_source_push() {
 sfdx_run_test() {
   log "Running org tests ..."
   USERNAME=${1:-}
-  add_trap
+  handle_errors
 
   sfdx force:apex:test:run \
     -u "$USERNAME" \

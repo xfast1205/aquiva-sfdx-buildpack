@@ -40,9 +40,12 @@ verify_project_file() {
   fi
 }
 
-add_trap() {
+# Remove scratch on error exit
+handle_errors() {
+
   trap 'sfdx_delete_scratch \
     "$TARGET_SCRATCH_ORG_ALIAS" \
     "$DEV_HUB_INSTANCE_URL"' \
   ERR
+
 }
