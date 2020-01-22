@@ -35,14 +35,18 @@ sfdx_source_push() {
     -u "$USERNAME"
 }
 
-sfdx_run_test() {
-  log "Running org tests ..."
-  USERNAME=${1:-}
-
+add_trap() {
   trap 'sfdx_delete_scratch \
     "$TARGET_SCRATCH_ORG_ALIAS" \
     "$DEV_HUB_INSTANCE_URL"' \
   ERR
+}
+
+sfdx_run_test() {
+  log "Running org tests ..."
+  USERNAME=${1:-}
+
+  add_trap
 
   sfdx force:apex:test:run \
     -u "$USERNAME" \
