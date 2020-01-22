@@ -50,8 +50,6 @@ deploy_to_scratch() {
     "$DEV_HUB_INSTANCE_URL" \
     "$TARGET_SCRATCH_ORG_ALIAS"
 
-  add_trap
-
   sfdx_source_push \
     "$TARGET_SCRATCH_ORG_ALIAS"
 
